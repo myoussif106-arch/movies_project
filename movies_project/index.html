@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عالم الجريمة - تسجيل الدخول وطلب الإذن</title>
+    <style>
+        body {
+            background-color: #0c0c0e;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            direction: rtl;
+        }
+        .auth-card {
+            background-color: #141414;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .auth-card h2 {
+            margin-bottom: 25px;
+            color: #e50914;
+            font-size: 28px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 14px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background-color: #222;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.2s;
+        }
+        .form-group input:focus {
+            border-color: #e50914;
+            box-shadow: 0 0 8px rgba(229,9,20,0.3);
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #e50914;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+        .auth-btn:hover { background-color: #b81d24; }
+        .toggle-text {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #aaa;
+        }
+        .toggle-text span {
+            color: #e50914;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .msg-box {
+            font-size: 14px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+        .error { color: #ff3333; background-color: rgba(255,51,51,0.1); }
+        .success { color: #22c55e; background-color: rgba(34,197,94,0.1); }
+        .warning { color: #eab308; background-color: rgba(234,179,8,0.1); }
+
+        .admin-panel {
+            margin-top: 30px;
+            border-top: 2px dashed #333;
+            padding-top: 20px;
+            text-align: right;
+            display: none;
+        }
+        .admin-panel h3 { color: #eab308; margin-bottom: 15px; }
+        .request-item {
+            background-color: #222;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-actions button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .approve-btn { background-color: #22c55e; color: white; }
+        .reject-btn { background-color: #ef4444; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <h2 id="auth-title">تسجيل الدخول</h2>
+        <div class="msg-box" id="msg-box"></div>
+        
+        <form id="auth-form" onsubmit="handleAuth(event)">
+            <div class="form-group" id="name-group" style="display: none;">
+                <label for="username">اسم المستخدم:</label>
+                <input type="text" id="username">
+            </div>
+            <div class="form-group">
+                <label for="email">البريد الإلكتروني:</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">كلمة المرور:</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="auth-btn" id="submit-btn">دخول</button>
+        </form>
+
+        <div class="toggle-text">
+            <span id="toggle-link" onclick="toggleMode()">إنشاء حساب جديد</span> | 
+            <span style="color: #eab308;" onclick="checkAdminAccess()">لوحة الإدارة</span>
+        </div>
+
+        <div class="admin-panel" id="admin-panel">
+            <h3>طلبات الانضمام المعلقة</h3>
+            <div id="requests-list">لا توجد طلبات معلقة حالياً.</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // الرابط المبني على الـ Project ID الخاص بك بالملي
+        const SUPABASE_URL = "https://wdyhgweypfquorviikxx.supabase.co";
+        
+        // ⚠️ استبدل النص ده بالـ Key الحقيقي بتاعك اللي بيبدأ بـ eyJ... من غير ما تمسح علامات التنصيص
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkeWhnd2V5cGZxdW9ydmlpa3h4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MjQ2MDksImV4cCI6MjA5NjUwMDYwOX0.zNEqFeVZmTJynohdkP6cQKH-NWUgpsAQQ8gGlHaYoDs"; 
+        
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let isLoginMode = true;
+
+        if (localStorage.getItem('currentUser')) {
+            window.location.href = "home.html";
+        }
+
+        function toggleMode() {
+            isLoginMode = !isLoginMode;
+            const title = document.getElementById('auth-title');
+            const nameGroup = document.getElementById('name-group');
+            const submitBtn = document.getElementById('submit-btn');
+            const toggleLink = document.getElementById('toggle-link');
+            hideMsg();
+
+            if (isLoginMode) {
+                title.innerText = "تسجيل الدخول";
+                nameGroup.style.display = "none";
+                submitBtn.innerText = "دخول";
+                toggleLink.innerText = "إنشاء حساب جديد";
+            } else {
+                title.innerText = "إنشاء حساب وطلب إذن";
+                nameGroup.style.display = "block";
+                submitBtn.innerText = "إرسال طلب الانضمام";
+                toggleLink.innerText = "لديك حساب بالفعل؟ سجل دخول";
+            }
+        }
+
+        function showMsg(text, type) {
+            const box = document.getElementById('msg-box');
+            box.className = `msg-box ${type}`;
+            box.innerText = text;
+            box.style.display = "block";
+        }
+
+        function hideMsg() { 
+            document.getElementById('msg-box').style.display = "none"; 
+        }
+
+        async function handleAuth(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const username = document.getElementById('username').value.trim();
+
+            if (isLoginMode) {
+                const { data: users, error } = await _supabase
+                    .from('users')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password);
+
+                if (error) {
+                    showMsg("حدث خطأ في الاتصال بالسيرفر!", "error");
+                    return;
+                }
+
+                if (users && users.length > 0) {
+                    const user = users[0];
+                    if (user.status === 'approved') {
+                        localStorage.setItem('currentUser', JSON.stringify(user));
+                        window.location.href = "home.html";
+                    } else {
+                        showMsg("طلبك لا يزال قيد المراجعة! يرجى انتظار إذن الإدارة.", "warning");
+                    }
+                } else {
+                    showMsg("الإيميل أو كلمة المرور غير صحيحة!", "error");
+                }
+            } else {
+                const { data: existingUsers } = await _supabase
+                    .from('users')
+                    .select('email')
+                    .eq('email', email);
+
+                if (existingUsers && existingUsers.length > 0) {
+                    showMsg("هذا البريد الإلكتروني مسجل بالفعل!", "error");
+                    return;
+                }
+
+                const { error: insertError } = await _supabase
+                    .from('users')
+                    .insert([{ username: username || 'مستخدم', email: email, password: password, status: 'pending' }]);
+
+                if (insertError) {
+                    showMsg("فشل إرسال الطلب، حاول مجدداً!", "error");
+                } else {
+                    showMsg("تم إرسال طلب الانضمام بنجاح! انتظر موافقة الإدارة لدخول المنصة.", "success");
+                    document.getElementById('auth-form').reset();
+                }
+            }
+        }
+
+        async function checkAdminAccess() {
+            const adminPass = prompt("أدخل الرقم السري المعقد الخاص بالإدارة لرؤية الطلبات:");
+            if (adminPass === "Z0sZ5hd3wS9Qt7z6") { 
+                document.getElementById('admin-panel').style.display = "block";
+                renderRequests();
+            } else {
+                alert("رقم سري خاطئ تماماً!");
+            }
+        }
+
+        async function renderRequests() {
+            const listContainer = document.getElementById('requests-list');
+            const { data: pendingUsers, error } = await _supabase
+                .from('users')
+                .select('*')
+                .eq('status', 'pending');
+
+            if (error || !pendingUsers || pendingUsers.length === 0) {
+                listContainer.innerText = "لا توجد طلبات معلقة حالياً.";
+                return;
+            }
+
+            listContainer.innerHTML = '';
+            pendingUsers.forEach(u => {
+                const item = document.createElement('div');
+                item.className = 'request-item';
+                item.innerHTML = `
+                    <div><strong>${u.username}</strong> (${u.email})</div>
+                    <div class="admin-actions">
+                        <button class="approve-btn" onclick="updateUserStatus('${u.email}', 'approved')">موافقة</button>
+                        <button class="reject-btn" onclick="updateUserStatus('${u.email}', 'rejected')">رفض</button>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        async function updateUserStatus(email, newStatus) {
+            if (newStatus === 'rejected') {
+                await _supabase.from('users').delete().eq('email', email);
+            } else {
+                await _supabase.from('users').update({ status: 'approved' }).eq('email', email);
+            }
+            renderRequests();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عالم الجريمة - القائمة الرئيسية</title>
+    <style>
+        body {
+            background-color: #0c0c0e;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 20px;
+        }
+        .right-header-section { flex: 1; text-align: right; }
+        .welcome-title { font-size: 22px; margin: 0; color: #fff; }
+        
+        .center-header-section { flex: 1; overflow: hidden; position: relative; white-space: nowrap; padding: 10px 0; }
+        .brand-logo {
+            font-size: 36px;
+            font-weight: 900;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: inline-flex;
+            direction: ltr;
+            user-select: none;
+            background: linear-gradient(180deg, #7a0000 0%, #e50914 60%, #2b0000 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 0px 2px #ff0000);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), -1px 3px 6px rgba(138, 3, 3, 0.7);
+            animation: move-logo 12s linear infinite;
+        }
+        .brand-logo span { position: relative; }
+        .brand-logo span::after {
+            content: ''; position: absolute; bottom: -10px; left: 45%; width: 3px; height: 0px;
+            background-color: #8a0303; border-radius: 0 0 3px 3px; animation: blood-drip 4s infinite ease-in-out;
+        }
+        @keyframes blood-drip { 0% { height: 0px; opacity: 0; } 50% { height: 15px; opacity: 1; } 100% { height: 25px; opacity: 0; } }
+        @keyframes move-logo { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        .left-header-section { flex: 1; text-align: left; }
+        .logout-btn {
+            background-color: #1c1c24; color: white; border: 1px solid #333; padding: 10px 20px;
+            cursor: pointer; border-radius: 6px; font-weight: bold; transition: 0.2s ease;
+        }
+        .logout-btn:hover { background-color: #e50914; border-color: #e50914; }
+
+        /* حاوية الكروت الـ 3D القادمة من ملف الجافا سكريبت */
+        #movies-container { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="header-status">
+        <div class="right-header-section">
+            <h2 class="welcome-title" id="welcome-msg">🕵️‍♂️ مرحباً بك</h2>
+        </div>
+        <div class="center-header-section">
+            <div class="brand-logo">
+                <span>C</span><span>R</span><span>I</span><span>M</span><span>E</span>
+                <span style="width: 10px;"></span>
+                <span>W</span><span>O</span><span>R</span><span>L</span><span>D</span>
+            </div>
+        </div>
+        <div class="left-header-section">
+            <button class="logout-btn" onclick="logout()">تسجيل الخروج 🚪</button>
+        </div>
+    </div>
+
+    <h3 style="border-right: 4px solid #e50914; padding-right: 10px; margin-top: 20px;">المسلسلات والأفلام المتاحة</h3>
+    
+    <div id="movies-container"></div>
+
+    <script src="movies.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = "https://wdyhgweypfquorviikxx.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkeWhnd2V5cGZxdW9ydmlpa3h4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MjQ2MDksImV4cCI6MjA5NjUwMDYwOX0.zNEqFeVZmTJynohdkP6cQKH-NWUgpsAQQ8gGlHaYoDs"; 
+        
+        let _supabase;
+        try {
+            _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch(e) {
+            console.error("Supabase Init Error:", e);
+        }
+
+        function checkAuth() {
+            // تشغيل الـ 3D فوراً من أول ملي ثانية وبأعلى أولوية
+            if (typeof displayMovies === 'function') {
+                displayMovies();
+            }
+
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = "index.html";
+                return;
+            }
+            document.getElementById('welcome-msg').innerText = `🕵️‍♂️ مرحباً، ${currentUser.username || 'youssef'}`;
+
+            if (_supabase) {
+                _supabase
+                    .from('users')
+                    .select('status')
+                    .eq('email', currentUser.email)
+                    .limit(1)
+                    .then(({ data: users, error }) => {
+                        if (!error && users && users.length > 0) {
+                            if (users[0].status !== 'approved') {
+                                localStorage.removeItem('currentUser');
+                                window.location.href = "index.html";
+                            }
+                        }
+                    })
+                    .catch(err => console.log("Supabase safety background check completed."));
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = "index.html";
+        }
+
+        window.onload = checkAuth;
+    </script>
+</body>
+</html>
