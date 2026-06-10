@@ -98,7 +98,7 @@
             border-radius: 4px; position: absolute; left: 0; right: auto;
         }
         .controls-row { display: flex; justify-content: space-between; align-items: center; }
-        .controls-left-side { display: flex; align-items: center; gap: 18px; }
+        .controls-left-side { display: flex; align-items: center; gap: 14px; }
         .controls-right-side { display: flex; align-items: center; }
         .control-btn {
             background: none; border: none; color: white;
@@ -106,6 +106,7 @@
         }
         .control-btn:hover { color: #e50914; transform: scale(1.1); }
         .time-display { font-size: 13px; color: #bbb; font-family: monospace; user-select: none; }
+        .speed-display { font-size: 13px; color: #aaa; font-family: monospace; user-select: none; margin-left: 4px; font-weight: bold; }
 
         .movie-title {
             font-size: 24px; font-weight: bold; margin-top: 20px; margin-bottom: 5px;
@@ -177,7 +178,12 @@
                         <button class="control-btn" id="rewind-btn" title="تأخير 5 ثوانٍ">⏪</button>
                         <button class="control-btn" id="play-btn">▶</button>
                         <button class="control-btn" id="forward-btn" title="تقديم 5 ثوانٍ">⏩</button>
-                        <button class="control-btn" id="mute-btn">🔊</button>
+                        
+                        <button class="control-btn" id="slower-btn" title="تبطيء السرعة" style="font-size: 15px; margin-left: 5px;">🐢</button>
+                        <button class="control-btn" id="faster-btn" title="تسريع السرعة" style="font-size: 15px;">⚡</button>
+                        <span class="speed-display" id="speed-display">1.0x</span>
+
+                        <button class="control-btn" id="mute-btn" style="margin-left: 5px;">🔊</button>
                         <span class="time-display" id="time-display">00:00 / 00:00</span>
                     </div>
                     <div class="controls-right-side">
@@ -219,7 +225,7 @@
     <script src="movies.js"></script>
     <script>
         const SUPABASE_URL = "https://wdyhgweypfquorviikxx.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkeWhnd2V5cGZxdW9ydmlpa3h4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MjQ2MDksImV4cCI6MjA5NjUwMDYwOX0.zNEqFeVZmTJynohdkP6cQKH-NWUgpsAQQ8gGlHaYoDs";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkeWhnd2V5cGZxdW9ydmlpa3h4Iiwicm9sZSI6ImFub24pLCJpYXQiOjE3ODA5MjQ2MDksImV4cCI6MjA5NjUwMDYwOX0.zNEqFeVZmTJynohdkP6cQKH-NWUgpsAQQ8gGlHaYoDs";
         
         let _supabase;
         try { _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) { console.error(e); }
@@ -231,6 +237,9 @@
         const playBtn = document.getElementById('play-btn');
         const rewindBtn = document.getElementById('rewind-btn');
         const forwardBtn = document.getElementById('forward-btn');
+        const slowerBtn = document.getElementById('slower-btn');
+        const fasterBtn = document.getElementById('faster-btn');
+        const speedDisplay = document.getElementById('speed-display');
         const muteBtn = document.getElementById('mute-btn');
         const progressBar = document.getElementById('progress-bar');
         const progressContainer = document.getElementById('progress-container');
@@ -273,6 +282,10 @@
             
             player.src = ep.video;
             player.load();
+            
+            // إعادة ضبط السرعة إلى 1.0x تلقائياً عند تغيير الحلقة
+            player.playbackRate = 1.0;
+            speedDisplay.innerText = "1.0x";
             
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
@@ -326,13 +339,30 @@
             else { player.pause(); playBtn.innerText = "▶"; saveProgress(player.currentTime); }
         };
 
-        // تشغيل أزرار التقديم والتأخير بمقدار 5 ثوانٍ عند الضغط عليها
         rewindBtn.onclick = () => {
             player.currentTime = Math.max(0, player.currentTime - 5);
         };
 
         forwardBtn.onclick = () => {
             player.currentTime = Math.min(player.duration, player.currentTime + 5);
+        };
+
+        // دالة تبطيء الفيديو بمقدار 0.25x بحد أدنى 0.5x
+        slowerBtn.onclick = () => {
+            let currentSpeed = player.playbackRate;
+            if (currentSpeed > 0.5) {
+                player.playbackRate = currentSpeed - 0.25;
+                speedDisplay.innerText = player.playbackRate.toFixed(2) + "x";
+            }
+        };
+
+        // دالة تسريع الفيديو بمقدار 0.25x بحد أقصى 2.0x
+        fasterBtn.onclick = () => {
+            let currentSpeed = player.playbackRate;
+            if (currentSpeed < 2.0) {
+                player.playbackRate = currentSpeed + 0.25;
+                speedDisplay.innerText = player.playbackRate.toFixed(2) + "x";
+            }
         };
 
         muteBtn.onclick = () => {
