@@ -8,7 +8,7 @@ const movies = [
         episodes: [
             {
                 name: "الحلقة 1",
-                video: "https://streamtape.com/e/yMbq30jbY1FyRj/.mp4",
+                video: "https://streamtape.com/e/yMbq30jbY1FyRj/",
             },
             {
                 name: "الحلقة 2",
