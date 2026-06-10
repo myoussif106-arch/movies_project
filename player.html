@@ -74,28 +74,38 @@
         .custom-controls {
             position: absolute;
             bottom: 0; left: 0; right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
-            padding: 15px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            z-index: 10;
+            padding: 15px 20px;
+            z-index: 2147483647;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+            direction: ltr;
         }
         .progress-bar-container {
-            width: 100%; height: 5px;
+            width: 100%; height: 4px;
             background: rgba(255,255,255,0.2);
-            border-radius: 3px; cursor: pointer;
-            position: relative;
+            cursor: pointer; position: relative;
+            margin-bottom: 12px; border-radius: 4px;
+            direction: ltr;
         }
-        .progress-filled { height: 100%; width: 0%; background: #e50914; border-radius: 3px; }
-        .controls-row { display: flex; justify-content: space-between; align-items: center; direction: ltr; }
-        .left-controls, .right-controls { display: flex; align-items: center; gap: 18px; }
+        .progress-bar-container:hover { height: 8px; }
+        .progress-filled { 
+            height: 100%; width: 0%; 
+            background: linear-gradient(90deg, #ff0055, #e50914); 
+            box-shadow: 0 0 12px #ff0022;
+            border-radius: 4px; position: absolute; left: 0; right: auto;
+        }
+        .controls-row { display: flex; justify-content: space-between; align-items: center; }
+        .controls-left-side { display: flex; align-items: center; gap: 18px; }
+        .controls-right-side { display: flex; align-items: center; }
         .control-btn {
             background: none; border: none; color: white;
-            font-size: 18px; cursor: pointer; transition: 0.2s;
+            font-size: 18px; font-weight: bold; cursor: pointer; transition: color 0.2s, transform 0.1s;
         }
-        .control-btn:hover { color: #e50914; }
-        .time-display { font-size: 13px; color: #ccc; font-family: monospace; }
+        .control-btn:hover { color: #e50914; transform: scale(1.1); }
+        .time-display { font-size: 13px; color: #bbb; font-family: monospace; user-select: none; }
 
         .movie-title {
             font-size: 24px; font-weight: bold; margin-top: 20px; margin-bottom: 5px;
@@ -152,7 +162,7 @@
 <body>
 
     <div class="player-container">
-        <a href="home.html" class="back-home-btn">⬅ العودة للقائمة الرئيسية</a>
+        <a href="home.html" class="back-home-btn">🔙 العودة للرئيسية</a>
 
         <div class="video-box-3d" id="video-box">
             <video id="main-player" playsinline></video>
@@ -163,13 +173,15 @@
                     <div class="progress-filled" id="progress-bar"></div>
                 </div>
                 <div class="controls-row">
-                    <div class="left-controls">
+                    <div class="controls-left-side">
+                        <button class="control-btn" id="rewind-btn" title="تأخير 5 ثوانٍ">⏪</button>
                         <button class="control-btn" id="play-btn">▶</button>
+                        <button class="control-btn" id="forward-btn" title="تقديم 5 ثوانٍ">⏩</button>
                         <button class="control-btn" id="mute-btn">🔊</button>
                         <span class="time-display" id="time-display">00:00 / 00:00</span>
                     </div>
-                    <div class="right-controls">
-                        <button class="control-btn" id="fullscreen-btn">🔲</button>
+                    <div class="controls-right-side">
+                        <button class="control-btn" id="fullscreen-btn">📺 شاشة كاملة</button>
                     </div>
                 </div>
             </div>
@@ -217,6 +229,8 @@
 
         const player = document.getElementById('main-player');
         const playBtn = document.getElementById('play-btn');
+        const rewindBtn = document.getElementById('rewind-btn');
+        const forwardBtn = document.getElementById('forward-btn');
         const muteBtn = document.getElementById('mute-btn');
         const progressBar = document.getElementById('progress-bar');
         const progressContainer = document.getElementById('progress-container');
@@ -312,6 +326,15 @@
             else { player.pause(); playBtn.innerText = "▶"; saveProgress(player.currentTime); }
         };
 
+        // تشغيل أزرار التقديم والتأخير بمقدار 5 ثوانٍ عند الضغط عليها
+        rewindBtn.onclick = () => {
+            player.currentTime = Math.max(0, player.currentTime - 5);
+        };
+
+        forwardBtn.onclick = () => {
+            player.currentTime = Math.min(player.duration, player.currentTime + 5);
+        };
+
         muteBtn.onclick = () => {
             player.muted = !player.muted;
             muteBtn.innerText = player.muted ? "🔇" : "🔊";
@@ -326,6 +349,12 @@
         fullscreenBtn.onclick = () => {
             if (!document.fullscreenElement) { videoBox.requestFullscreen().catch(err => console.log(err)); } 
             else { document.exitFullscreen(); }
+        };
+
+        document.onkeydown = (e) => {
+            if (e.key === "ArrowRight") { e.preventDefault(); player.currentTime = Math.min(player.duration, player.currentTime + 5); }
+            if (e.key === "ArrowLeft") { e.preventDefault(); player.currentTime = Math.max(0, player.currentTime - 5); }
+            if (e.key === " " || e.key === "Spacebar") { e.preventDefault(); playBtn.click(); }
         };
 
         function formatTime(seconds) {
