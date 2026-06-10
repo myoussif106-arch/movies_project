@@ -123,7 +123,7 @@ function init3DBackground() {
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
 
-    const numParticles = window.innerWidth <= 768 ? 40 : 80; 
+    const numParticles = window.innerWidth <= 768 ? 40 : 85; 
     const particles = [];
     let mouseX = 0, mouseY = 0;
 
