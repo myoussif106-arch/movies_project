@@ -8,7 +8,7 @@ const movies = [
         episodes: [
             {
                 name: "الحلقة 1",
-                video: "https://streamtape.com/e/yMbq30jbY1FyRj/",
+                video: "https://archive.org/download/ep-1-detective-l/EP1%EF%BC%9ADetective%20L.mp4",
             },
             {
                 name: "الحلقة 2",
