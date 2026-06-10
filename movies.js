@@ -12,7 +12,7 @@ const movies = [
             },
             {
                 name: "الحلقة 2",
-                video: "https://archive.org/download/ep-2-detective-l/EP2%EF%BC%9ADetective%20L.mp4",
+                video: "https://archive.org/download/detective-l-ep-2/Detective%20L%20-%20EP2.mp4",
             }
         ]
     }
