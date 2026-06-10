@@ -16,64 +16,94 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
         .player-container {
-            max-width: 1000px;
+            max-width: 950px;
             width: 100%;
             margin: 0 auto;
             padding: 20px;
             box-sizing: border-box;
         }
         .back-home-btn {
-            background-color: #1c1c24;
+            background-color: #e50914;
             color: white;
-            border: 1px solid #333;
+            border: none;
             padding: 10px 20px;
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             font-size: 14px;
             transition: 0.2s;
-            display: inline-block;
             text-decoration: none;
+            display: inline-block;
         }
-        .back-home-btn:hover { background-color: #e50914; border-color: #e50914; }
-
-        .video-box-3d {
+        .back-home-btn:hover { background-color: #b81d24; }
+        
+        .video-shadow-wrapper {
             position: relative;
             width: 100%;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .video-shadow-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, rgba(229, 9, 20, 0.35) 0%, transparent 70%);
+            filter: blur(50px);
+            z-index: -1;
+            transform: scale(1.05);
+            pointer-events: none;
+        }
+
+        .video-box {
+            position: relative; 
+            width: 100%;
             background-color: #000;
+            aspect-ratio: 16/9;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            aspect-ratio: 16/9;
         }
-        video { width: 100%; height: 100%; object-fit: contain; display: block; }
 
-        .netflix-subtitle-text {
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .netflix-subtitle-overlay {
             position: absolute;
-            bottom: 65px;
+            bottom: 16%; 
             left: 50%;
             transform: translateX(-50%);
-            color: #ffffff;
-            font-size: 24px;
-            font-weight: bold;
-            text-shadow: 0px 0px 7px #000, 0px 0px 4px #000;
-            background-color: rgba(0, 0, 0, 0.65);
-            padding: 6px 18px;
-            border-radius: 6px;
-            z-index: 5;
-            pointer-events: none;
             text-align: center;
-            display: none;
-            max-width: 85%;
+            width: 85%;
+            pointer-events: none;
+            z-index: 2147483647;
+        }
+
+        .netflix-subtitle-text {
+            background-color: rgba(0, 0, 0, 0.75); 
+            color: #ffffff; 
+            font-size: 26px;
+            font-weight: bold;
+            padding: 8px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            direction: rtl;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
         .custom-controls {
             position: absolute;
-            bottom: 0; left: 0; right: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
             background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
             display: flex;
             flex-direction: column;
@@ -81,121 +111,99 @@
             z-index: 2147483647;
             opacity: 1;
             transition: opacity 0.4s ease;
-            direction: ltr;
+            direction: ltr; 
         }
+
         .progress-bar-container {
-            width: 100%; height: 4px;
-            background: rgba(255,255,255,0.2);
-            cursor: pointer; position: relative;
-            margin-bottom: 12px; border-radius: 4px;
-            direction: ltr;
+            width: 100%;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            position: relative;
+            direction: ltr; 
         }
         .progress-bar-container:hover { height: 8px; }
-        .progress-filled { 
-            height: 100%; width: 0%; 
-            background: linear-gradient(90deg, #ff0055, #e50914); 
+        
+        .progress-filled {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff0055, #e50914);
             box-shadow: 0 0 12px #ff0022;
-            border-radius: 4px; position: absolute; left: 0; right: auto;
+            border-radius: 4px;
+            position: absolute;
+            left: 0; 
+            right: auto;
         }
-        .controls-row { display: flex; justify-content: space-between; align-items: center; }
-        .controls-left-side { display: flex; align-items: center; gap: 14px; }
+
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .controls-left-side {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
         .controls-right-side { display: flex; align-items: center; }
+        
         .control-btn {
-            background: none; border: none; color: white;
-            font-size: 18px; font-weight: bold; cursor: pointer; transition: color 0.2s, transform 0.1s;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.1s;
         }
-        .control-btn:hover { color: #e50914; transform: scale(1.1); }
-        .time-display { font-size: 13px; color: #bbb; font-family: monospace; user-select: none; }
-        .speed-display { font-size: 13px; color: #aaa; font-family: monospace; user-select: none; margin-left: 4px; font-weight: bold; }
+        .control-btn:hover { 
+            color: #e50914; 
+            transform: scale(1.1);
+        }
+        .time-display { 
+            font-size: 13px; 
+            color: #bbb; 
+            font-family: monospace; 
+            user-select: none;
+        }
 
-        .movie-title {
-            font-size: 24px; font-weight: bold; margin-top: 20px; margin-bottom: 5px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
-        }
-        .movie-metadata { color: #888; font-size: 14px; margin-bottom: 25px; }
+        .video-box:fullscreen .netflix-subtitle-text { font-size: 40px; padding: 12px 30px; }
+        .video-box:-webkit-full-screen .netflix-subtitle-text { font-size: 40px; padding: 12px 30px; }
 
-        .episodes-section { margin-top: 25px; background: #141419; padding: 20px; border-radius: 8px; border: 1px solid #222; }
-        .episodes-title { font-size: 18px; margin-top: 0; margin-bottom: 15px; color: #e50914; border-right: 4px solid #e50914; padding-right: 8px; }
-        .episodes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
-        .episode-btn {
-            background: #1c1c24; color: white; border: 1px solid #333;
-            padding: 12px 5px; border-radius: 6px; cursor: pointer; font-weight: bold;
-            text-align: center; transition: 0.2s ease; font-size: 14px;
-        }
-        .episode-btn:hover { border-color: #e50914; background: #222; }
-        .episode-btn.active { background: #e50914; border-color: #e50914; box-shadow: 0 0 12px rgba(229,9,20,0.4); }
+        .movie-title { font-size: 26px; margin: 25px 0 10px 0; color: #fff; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
+        .movie-meta { color: #888; font-size: 14px; margin-bottom: 25px; }
+        .episodes-section { margin-top: 30px; }
+        .episodes-section h3 { font-size: 18px; margin-bottom: 15px; border-right: 4px solid #e50914; padding-right: 10px; }
+        .episodes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
+        .episode-btn { background-color: #1c1c24; color: white; border: 1px solid #333; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; text-align: center; transition: 0.2s; }
+        .episode-btn:hover { border-color: #e50914; background-color: #252530; }
+        .episode-btn.active { background-color: #e50914; border-color: #e50914; box-shadow: 0 0 10px rgba(229,9,20,0.5); }
 
-        .comments-section { margin-top: 35px; background: #141419; padding: 20px; border-radius: 8px; border: 1px solid #222; }
-        .comments-title { font-size: 18px; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; border-right: 4px solid #e50914; padding-right: 8px; }
-        .comment-form { display: flex; gap: 12px; margin-bottom: 20px; }
-        .comment-input {
-            flex: 1; background: #0c0c0e; border: 1px solid #333; border-radius: 6px;
-            padding: 12px; color: white; font-size: 14px; outline: none; resize: none; height: 45px; transition: 0.3s;
-        }
+        /* ستايل التعليقات والمراجعات المنسق */
+        .comments-section { margin-top: 40px; border-top: 1px solid #222; padding-top: 25px; }
+        .comment-form { display: flex; gap: 12px; margin-bottom: 25px; }
+        .comment-input { flex: 1; background: #141414; border: 1px solid #333; border-radius: 6px; padding: 15px; color: white; font-size: 15px; outline: none; resize: none; height: 50px; }
         .comment-input:focus { border-color: #e50914; }
-        .comment-submit-btn {
-            background: #e50914; color: white; border: none; padding: 0 22px;
-            border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s;
-        }
-        .comment-submit-btn:hover { background: #b80710; }
-        .comments-list { display: flex; flex-direction: column; gap: 12px; }
-        .comment-item { background: #1c1c24; padding: 14px; border-radius: 6px; border-right: 4px solid #e50914; border-top: 1px solid rgba(255,255,255,0.02); }
-        .comment-meta { font-size: 12px; color: #888; margin-bottom: 5px; display: flex; justify-content: space-between; }
-        .comment-author { font-weight: bold; color: #fff; }
-        .comment-text { font-size: 14px; line-height: 1.5; color: #ccc; }
-
-        @media (max-width: 768px) {
-            .player-container { padding: 10px; }
-            .back-home-btn { width: 100%; text-align: center; box-sizing: border-box; }
-            .movie-title { font-size: 19px; flex-direction: column; align-items: flex-start; gap: 12px; }
-            .movie-title div { width: 100%; display: flex; gap: 10px; }
-            .movie-title button { flex: 1; justify-content: center; padding: 8px; font-size: 14px; }
-            .netflix-subtitle-text { font-size: 17px !important; padding: 6px 12px; width: 90%; bottom: 55px; }
-            .progress-bar-container { height: 6px; }
-            .control-btn { font-size: 20px; }
-            .episodes-grid { grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 8px; }
-            .episode-btn { padding: 10px 2px; font-size: 12px; }
-            .comment-form { flex-direction: column; }
-            .comment-submit-btn { padding: 12px; width: 100%; }
-        }
+        .comment-submit-btn { background: #e50914; color: white; border: none; padding: 0 25px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .comment-submit-btn:hover { background: #b81d24; }
+        .comment-item { background: #141414; padding: 15px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #222; }
+        .comment-meta { font-size: 13px; color: #888; margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .comment-author { font-weight: bold; color: #e50914; }
     </style>
 </head>
 <body>
 
     <div class="player-container">
         <a href="home.html" class="back-home-btn">🔙 العودة للرئيسية</a>
-
-        <div class="video-box-3d" id="video-box">
-            <video id="main-player" playsinline></video>
-            <div class="netflix-subtitle-text" id="subtitle-box"></div>
-
-            <div class="custom-controls" id="video-controls">
-                <div class="progress-bar-container" id="progress-container">
-                    <div class="progress-filled" id="progress-bar"></div>
-                </div>
-                <div class="controls-row">
-                    <div class="controls-left-side">
-                        <button class="control-btn" id="rewind-btn" title="تأخير 5 ثوانٍ">⏪</button>
-                        <button class="control-btn" id="play-btn">▶</button>
-                        <button class="control-btn" id="forward-btn" title="تقديم 5 ثوانٍ">⏩</button>
-                        
-                        <button class="control-btn" id="slower-btn" title="تبطيء السرعة" style="font-size: 15px; margin-left: 5px;">🐢</button>
-                        <button class="control-btn" id="faster-btn" title="تسريع السرعة" style="font-size: 15px;">⚡</button>
-                        <span class="speed-display" id="speed-display">1.0x</span>
-
-                        <button class="control-btn" id="mute-btn" style="margin-left: 5px;">🔊</button>
-                        <span class="time-display" id="time-display">00:00 / 00:00</span>
-                    </div>
-                    <div class="controls-right-side">
-                        <button class="control-btn" id="fullscreen-btn">📺 شاشة كاملة</button>
-                    </div>
-                </div>
-            </div>
+        <div class="video-shadow-wrapper">
+            <div class="video-box" id="video-box"></div>
         </div>
-
+        
         <div class="movie-title">
-            <span id="movie-title-text">اسم المسلسل</span>
-            <div style="direction: ltr;">
+            <span id="movie-title">جاري التحميل...</span>
+            <div style="direction: ltr; display: flex; gap: 10px;">
                 <button onclick="handleEpisodeInteraction('like')" style="background: #1c1c24; border: 1px solid #333; color: #22c55e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 6px;">
                     👍 <span id="ep-like-count">0</span>
                 </button>
@@ -204,91 +212,150 @@
                 </button>
             </div>
         </div>
-        <div class="movie-metadata" id="movie-genre-text">الصنف والنوع</div>
+        
+        <div class="movie-meta" id="movie-meta"></div>
 
         <div class="episodes-section">
-            <h4 class="episodes-title">حلقات العرض</h4>
-            <div class="episodes-grid" id="episodes-container"></div>
+            <h3>الحالحلقات المتاحة</h3>
+            <div class="episodes-grid" id="episodes-grid"></div>
         </div>
 
         <div class="comments-section">
-            <h4 class="comments-title">مراجعات الجمهور والتعليقات 💬</h4>
+            <h3 style="border-right: 4px solid #e50914; padding-right: 10px; margin-bottom: 20px;">مراجعات الجمهور والتعليقات 💬</h3>
             <div class="comment-form">
                 <textarea class="comment-input" id="comment-field" placeholder="اكتب مراجعتك أو رأيك عن الحلقة هنا..."></textarea>
                 <button class="comment-submit-btn" onclick="submitComment()">نشر</button>
             </div>
-            <div class="comments-list" id="comments-box"></div>
+            <div id="comments-box">لا توجد مراجعات لهذه الحلقة بعد. كن أول من يعلق!</div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="movies.js"></script>
     <script>
-        const SUPABASE_URL = "https://wdyhgweypfquorviikxx.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkeWhnd2V5cGZxdW9ydmlpa3h4Iiwicm9sZSI6ImFub24pLCJpYXQiOjE3ODA5MjQ2MDksImV4cCI6MjA5NjUwMDYwOX0.zNEqFeVZmTJynohdkP6cQKH-NWUgpsAQQ8gGlHaYoDs";
-        
-        let _supabase;
-        try { _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) { console.error(e); }
-
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        const movieData = JSON.parse(localStorage.getItem('selectedMovie'));
-
-        const player = document.getElementById('main-player');
-        const playBtn = document.getElementById('play-btn');
-        const rewindBtn = document.getElementById('rewind-btn');
-        const forwardBtn = document.getElementById('forward-btn');
-        const slowerBtn = document.getElementById('slower-btn');
-        const fasterBtn = document.getElementById('faster-btn');
-        const speedDisplay = document.getElementById('speed-display');
-        const muteBtn = document.getElementById('mute-btn');
-        const progressBar = document.getElementById('progress-bar');
-        const progressContainer = document.getElementById('progress-container');
-        const timeDisplay = document.getElementById('time-display');
-        const fullscreenBtn = document.getElementById('fullscreen-btn');
-        const videoBox = document.getElementById('video-box');
-        const controls = document.getElementById('video-controls');
-        const subtitleBox = document.getElementById('subtitle-box');
-
-        let currentMovieId = movieData ? movieData.id : "";
-        let currentEpisodeName = "";
-        let introStart = 0, introEnd = 0;
-        let lastSavedTime = 0;
-
         if (!currentUser) { window.location.href = "index.html"; }
 
-        if (movieData) {
-            document.getElementById('movie-title-text').innerText = movieData.title;
-            document.getElementById('movie-genre-text').innerText = `${movieData.genre} • ⭐ ${movieData.rating}`;
-            
-            const epContainer = document.getElementById('episodes-container');
-            movieData.episodes.forEach((ep, idx) => {
-                const btn = document.createElement('button');
-                btn.className = `episode-btn ${idx === 0 ? 'active' : ''}`;
-                btn.id = `ep-btn-${idx}`;
-                btn.innerText = ep.name;
-                btn.onclick = () => playEpisode(ep, btn);
-                epContainer.appendChild(btn);
-            });
+        const SUPABASE_URL = "https://wdyhgweypfquorviikxx.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkeWhnd2V5cGZxdW9ydmlpa3h4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MjQ2MDksImV4cCI6MjA5NjUwMDYwOX0.zNEqFeVZmTJynohdkP6cQKH-NWUgpsAQQ8gGlHaYoDs"; 
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-            if (movieData.episodes.length > 0) {
-                playEpisode(movieData.episodes[0], epContainer.firstChild);
+        let currentMovieId = "";
+        let currentEpisodeName = "";
+        let lastSavedTime = 0;
+
+        const subtitlesData = {
+            "الحلقة 1": `WEBVTT\n\n1\n00:01:21.070 --> 00:01:22.070\n[المحقق إل]`,
+            "الحلقة 2": `WEBVTT\n\n1\n00:01:20.800 --> 00:01:21.800\n[المحقق إل]`,
+            "الحلقة 3": `WEBVTT\n\n1\n00:01:20.800 --> 00:01:21.800\n[المحقق إل]`
+        };
+
+        let parsedSubtitles = [];
+
+        function parseVTT(vttText) {
+            parsedSubtitles = [];
+            const regex = /(\d{2}:\d{2}:\d{2}\.\d{3}) --> (\d{2}:\d{2}:\d{2}\.\d{3})\r?\n([\s\S]*?)(?=\r?\n\r?\n|\r?\n*$)/g;
+            let match;
+            while ((match = regex.exec(vttText)) !== null) {
+                parsedSubtitles.push({
+                    start: toSeconds(match[1]),
+                    end: toSeconds(match[2]),
+                    text: match[3].replace(/\r?\n/g, '<br>')
+                });
             }
         }
 
-        async function playEpisode(ep, btnElement) {
-            currentEpisodeName = ep.name;
-            introStart = ep.introStart || 0;
-            introEnd = ep.introEnd || 0;
+        function toSeconds(timeStr) {
+            const p = timeStr.split(':');
+            return parseInt(p[0]) * 3600 + parseInt(p[1]) * 60 + parseFloat(p[2]);
+        }
+
+        if (typeof movies !== 'undefined' && movies.length > 0) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const movieIndex = parseInt(urlParams.get('id')) || 0; 
+            const movie = movies[movieIndex];
             
-            player.src = ep.video;
-            player.load();
+            if (movie) {
+                currentMovieId = movie.id;
+                document.getElementById('movie-title').innerText = movie.title;
+                document.getElementById('movie-meta').innerText = `${movie.genre} | ⭐ ${movie.rating}`;
+
+                const grid = document.getElementById('episodes-grid');
+                grid.innerHTML = ''; 
+                
+                movie.episodes.forEach((ep, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = `episode-btn ${index === 0 ? 'active' : ''}`;
+                    btn.id = `ep-btn-${index}`;
+                    btn.innerText = ep.name;
+                    btn.onclick = () => playEpisode(ep, btn);
+                    grid.appendChild(btn);
+                });
+
+                if(movie.episodes.length > 0) {
+                    playEpisode(movie.episodes[0], grid.children[0]);
+                }
+            }
+        }
+
+        async function playEpisode(episode, btnElement) {
+            currentEpisodeName = episode.name;
+            fetchEpisodeInteractions();
+            loadComments();
+
+            const episodeSubtitle = subtitlesData[episode.name] || "WEBVTT\n";
+            parseVTT(episodeSubtitle);
+
+            const videoBox = document.getElementById('video-box');
             
-            // إعادة ضبط السرعة إلى 1.0x تلقائياً عند تغيير الحلقة
+            // تم إضافة أزرار التقديم والتأخير والتسريع والتبطئ بدقة تامة لملفك الأصلي
+            videoBox.innerHTML = `
+                <video id="main-player" style="width: 100%; height: 100%; object-fit: contain;">
+                    <source src="${episode.video}" type="video/mp4">
+                </video>
+                <div class="netflix-subtitle-overlay">
+                    <span id="netflix-sub-box" class="netflix-subtitle-text" style="display:none;"></span>
+                </div>
+                <div class="custom-controls" id="custom-controls">
+                    <div class="progress-bar-container" id="progress-container">
+                        <div class="progress-filled" id="progress-filled"></div>
+                    </div>
+                    <div class="controls-row">
+                        <div class="controls-left-side">
+                            <button class="control-btn" id="rewind-btn" title="تأخير 5 ثوانٍ">⏪</button>
+                            <button class="control-btn" id="play-btn">▶</button>
+                            <button class="control-btn" id="forward-btn" title="تقديم 5 ثوانٍ">⏩</button>
+                            
+                            <button class="control-btn" id="slower-btn" title="تبطيء الفيديو" style="font-size: 15px; margin-left: 6px;">🐢</button>
+                            <button class="control-btn" id="faster-btn" title="تسريع الفيديو" style="font-size: 15px;">⚡</button>
+                            <span id="speed-display" style="font-size: 13px; color: #aaa; font-family: monospace; font-weight: bold; margin-left: 4px;">1.0x</span>
+
+                            <button class="control-btn" id="mute-btn" style="margin-left: 6px;">🔊</button>
+                            <span class="time-display" id="time-display">00:00 / 00:00</span>
+                        </div>
+                        <div class="controls-right-side">
+                            <button class="control-btn" id="fullscreen-btn">📺 شاشة كاملة</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const player = document.getElementById('main-player');
+            const subBox = document.getElementById('netflix-sub-box');
+            const playBtn = document.getElementById('play-btn');
+            const rewindBtn = document.getElementById('rewind-btn');
+            const forwardBtn = document.getElementById('forward-btn');
+            const slowerBtn = document.getElementById('slower-btn');
+            const fasterBtn = document.getElementById('faster-btn');
+            const speedDisplay = document.getElementById('speed-display');
+            const muteBtn = document.getElementById('mute-btn');
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const progressContainer = document.getElementById('progress-container');
+            const progressFilled = document.getElementById('progress-filled');
+            const timeDisplay = document.getElementById('time-display');
+            const controls = document.getElementById('custom-controls');
+
             player.playbackRate = 1.0;
-            speedDisplay.innerText = "1.0x";
-            
-            document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
-            if(btnElement) btnElement.classList.add('active');
 
             if (_supabase && currentUser) {
                 const { data } = await _supabase.from('user_progress').select('progress_seconds').eq('user_email', currentUser.email).eq('movie_id', currentMovieId).maybeSingle();
@@ -297,34 +364,98 @@
                     if (confirmResume) player.currentTime = data.progress_seconds;
                 }
             }
-            player.play().then(() => playBtn.innerText = "⏸").catch(() => playBtn.innerText = "▶");
-            loadComments();
-            fetchEpisodeInteractions();
+
+            playBtn.onclick = () => {
+                if (player.paused) { player.play(); playBtn.innerText = "⏸"; } 
+                else { player.pause(); playBtn.innerText = "▶"; saveProgress(player.currentTime); }
+            };
+            player.onclick = () => playBtn.click();
+
+            rewindBtn.onclick = () => { player.currentTime = Math.max(0, player.currentTime - 5); };
+            forwardBtn.onclick = () => { player.currentTime = Math.min(player.duration, player.currentTime + 5); };
+
+            slowerBtn.onclick = () => {
+                if (player.playbackRate > 0.5) {
+                    player.playbackRate -= 0.25;
+                    speedDisplay.innerText = player.playbackRate.toFixed(2) + "x";
+                }
+            };
+            fasterBtn.onclick = () => {
+                if (player.playbackRate < 2.0) {
+                    player.playbackRate += 0.25;
+                    speedDisplay.innerText = player.playbackRate.toFixed(2) + "x";
+                }
+            };
+
+            muteBtn.onclick = () => {
+                player.muted = !player.muted;
+                muteBtn.innerText = player.muted ? "🔇" : "🔊";
+            };
+
+            player.addEventListener('timeupdate', () => {
+                const currentTime = player.currentTime;
+                const activeSub = parsedSubtitles.find(sub => currentTime >= sub.start && currentTime <= sub.end);
+                if (activeSub) {
+                    subBox.innerHTML = activeSub.text;
+                    subBox.style.display = "inline-block";
+                } else {
+                    subBox.style.display = "none";
+                }
+
+                const percentage = (player.currentTime / player.duration) * 100;
+                progressFilled.style.width = `${percentage}%`;
+                timeDisplay.innerText = `${formatTime(player.currentTime)} / ${formatTime(player.duration || 0)}`;
+
+                if (Math.abs(currentTime - lastSavedTime) > 7) {
+                    saveProgress(currentTime);
+                    lastSavedTime = currentTime;
+                }
+            });
+
+            player.addEventListener('ended', () => {
+                saveProgress(0);
+                const currentEpIndex = movies.find(m => m.id === currentMovieId).episodes.findIndex(e => e.name === currentEpisodeName);
+                if (currentEpIndex !== -1 && currentEpIndex + 1 < movies.find(m => m.id === currentMovieId).episodes.length) {
+                    alert("انتهت الحلقة الحالية! سيبدأ تشغيل الحلقة التالية الآن...");
+                    const nextBtn = document.getElementById(`ep-btn-${currentEpIndex + 1}`);
+                    if (nextBtn) nextBtn.click();
+                }
+            });
+
+            progressContainer.onclick = (e) => {
+                const rect = progressContainer.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                player.currentTime = pos * player.duration;
+            };
+
+            fullscreenBtn.onclick = () => {
+                if (!document.fullscreenElement) { videoBox.requestFullscreen().catch(err => console.log(err)); } 
+                else { document.exitFullscreen(); }
+            };
+
+            document.onkeydown = (e) => {
+                if (e.key === "ArrowRight") { e.preventDefault(); player.currentTime = Math.min(player.duration, player.currentTime + 5); }
+                if (e.key === "ArrowLeft") { e.preventDefault(); player.currentTime = Math.max(0, player.currentTime - 5); }
+                if (e.key === " " || e.key === "Spacebar") { e.preventDefault(); playBtn.click(); }
+            };
+
+            function formatTime(seconds) {
+                if (isNaN(seconds)) return "00:00";
+                const min = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const sec = Math.floor(seconds % 60).toString().padStart(2, '0');
+                return `${min}:${sec}`;
+            }
+
+            let timeout;
+            videoBox.onmousemove = () => {
+                controls.style.opacity = '1';
+                clearTimeout(timeout);
+                timeout = setTimeout(() => { if (!player.paused) controls.style.opacity = '0'; }, 2500);
+            };
+
+            document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
         }
-
-        player.ontimeupdate = () => {
-            const currentTime = player.currentTime;
-            const duration = player.duration || 0;
-            
-            const pct = (currentTime / duration) * 100;
-            progressBar.style.width = `${pct}%`;
-            timeDisplay.innerText = `${formatTime(currentTime)} / ${formatTime(duration)}`;
-
-            if (currentTime >= introStart && currentTime <= introEnd) {
-                subtitleBox.innerText = "تخطي المقدمة ⏭";
-                subtitleBox.style.display = 'block';
-                subtitleBox.style.cursor = 'pointer';
-                subtitleBox.onclick = () => { player.currentTime = introEnd; subtitleBox.style.display = 'none'; };
-            } else {
-                subtitleBox.style.display = 'none';
-                subtitleBox.onclick = null;
-            }
-
-            if (Math.abs(currentTime - lastSavedTime) > 7) {
-                saveProgress(currentTime);
-                lastSavedTime = currentTime;
-            }
-        };
 
         async function saveProgress(time) {
             if (!_supabase || !currentUser) return;
@@ -333,73 +464,6 @@
                 episode_name: currentEpisodeName, progress_seconds: time, updated_at: new Date()
             }, { onConflict: 'user_email,movie_id' });
         }
-
-        playBtn.onclick = () => {
-            if (player.paused) { player.play(); playBtn.innerText = "⏸"; } 
-            else { player.pause(); playBtn.innerText = "▶"; saveProgress(player.currentTime); }
-        };
-
-        rewindBtn.onclick = () => {
-            player.currentTime = Math.max(0, player.currentTime - 5);
-        };
-
-        forwardBtn.onclick = () => {
-            player.currentTime = Math.min(player.duration, player.currentTime + 5);
-        };
-
-        // دالة تبطيء الفيديو بمقدار 0.25x بحد أدنى 0.5x
-        slowerBtn.onclick = () => {
-            let currentSpeed = player.playbackRate;
-            if (currentSpeed > 0.5) {
-                player.playbackRate = currentSpeed - 0.25;
-                speedDisplay.innerText = player.playbackRate.toFixed(2) + "x";
-            }
-        };
-
-        // دالة تسريع الفيديو بمقدار 0.25x بحد أقصى 2.0x
-        fasterBtn.onclick = () => {
-            let currentSpeed = player.playbackRate;
-            if (currentSpeed < 2.0) {
-                player.playbackRate = currentSpeed + 0.25;
-                speedDisplay.innerText = player.playbackRate.toFixed(2) + "x";
-            }
-        };
-
-        muteBtn.onclick = () => {
-            player.muted = !player.muted;
-            muteBtn.innerText = player.muted ? "🔇" : "🔊";
-        };
-
-        progressContainer.onclick = (e) => {
-            const rect = progressContainer.getBoundingClientRect();
-            const pos = (e.clientX - rect.left) / rect.width;
-            player.currentTime = pos * player.duration;
-        };
-
-        fullscreenBtn.onclick = () => {
-            if (!document.fullscreenElement) { videoBox.requestFullscreen().catch(err => console.log(err)); } 
-            else { document.exitFullscreen(); }
-        };
-
-        document.onkeydown = (e) => {
-            if (e.key === "ArrowRight") { e.preventDefault(); player.currentTime = Math.min(player.duration, player.currentTime + 5); }
-            if (e.key === "ArrowLeft") { e.preventDefault(); player.currentTime = Math.max(0, player.currentTime - 5); }
-            if (e.key === " " || e.key === "Spacebar") { e.preventDefault(); playBtn.click(); }
-        };
-
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return "00:00";
-            const min = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const sec = Math.floor(seconds % 60).toString().padStart(2, '0');
-            return `${min}:${sec}`;
-        }
-
-        let timeout;
-        videoBox.onmousemove = () => {
-            controls.style.opacity = '1';
-            clearTimeout(timeout);
-            timeout = setTimeout(() => { if (!player.paused) controls.style.opacity = '0'; }, 2500);
-        };
 
         async function loadComments() {
             if (!_supabase) return;
