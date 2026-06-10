@@ -17,16 +17,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        .right-header-section { flex: 1; text-align: right; }
-        .welcome-title { font-size: 22px; margin: 0; color: #fff; }
+        .right-header-section { flex: 1; min-width: 150px; text-align: right; }
+        .welcome-title { font-size: 20px; margin: 0; color: #fff; }
         
-        .center-header-section { flex: 1; overflow: hidden; position: relative; white-space: nowrap; padding: 10px 0; }
+        .center-header-section { flex: 2; min-width: 250px; overflow: hidden; position: relative; white-space: nowrap; text-align: center; }
         .brand-logo {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 900;
             font-family: 'Impact', 'Arial Black', sans-serif;
             text-transform: uppercase;
@@ -40,25 +42,69 @@
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0px 0px 2px #ff0000);
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), -1px 3px 6px rgba(138, 3, 3, 0.7);
-            animation: move-logo 12s linear infinite;
         }
-        .brand-logo span { position: relative; }
-        .brand-logo span::after {
-            content: ''; position: absolute; bottom: -10px; left: 45%; width: 3px; height: 0px;
-            background-color: #8a0303; border-radius: 0 0 3px 3px; animation: blood-drip 4s infinite ease-in-out;
-        }
-        @keyframes blood-drip { 0% { height: 0px; opacity: 0; } 50% { height: 15px; opacity: 1; } 100% { height: 25px; opacity: 0; } }
-        @keyframes move-logo { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        .left-header-section { flex: 1; text-align: left; }
+        .left-header-section { flex: 1; min-width: 150px; text-align: left; }
         .logout-btn {
             background-color: #1c1c24; color: white; border: 1px solid #333; padding: 10px 20px;
             cursor: pointer; border-radius: 6px; font-weight: bold; transition: 0.2s ease;
         }
         .logout-btn:hover { background-color: #e50914; border-color: #e50914; }
 
-        /* حاوية الكروت الـ 3D القادمة من ملف الجافا سكريبت */
-        #movies-container { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; margin-top: 20px; }
+        .toolbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            background: #141414;
+            border: 1px solid #333;
+            padding: 12px 20px;
+            border-radius: 30px;
+            color: white;
+            font-size: 15px;
+            width: 100%;
+            max-width: 380px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .search-box:focus { border-color: #e50914; box-shadow: 0 0 10px rgba(229,9,20,0.2); }
+        
+        .filter-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
+        .tab-btn {
+            background: #141414; color: #aaa; border: 1px solid #333; padding: 10px 22px;
+            border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.2s;
+            font-size: 14px;
+        }
+        .tab-btn.active, .tab-btn:hover { background: #e50914; color: white; border-color: #e50914; }
+
+        /* حاوية الكروت المتجاوبة بالكامل كمبيوتر وموبايل للشبكة */
+        #movies-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 25px; 
+            justify-content: center; 
+            margin-top: 20px; 
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* استعلامات الوسائط الخاصة بالهواتف المحمولة وضبط المحاذاة */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .header-status { flex-direction: column; text-align: center; gap: 12px; }
+            .right-header-section, .left-header-section, .center-header-section { text-align: center; width: 100%; flex: none; }
+            .center-header-section { order: -1; }
+            .brand-logo { font-size: 28px; }
+            .toolbar-container { flex-direction: column; align-items: stretch; gap: 15px; }
+            .search-box { max-width: 100%; box-sizing: border-box; }
+            .filter-tabs { justify-content: center; width: 100%; }
+            .tab-btn { flex: 1; text-align: center; padding: 10px 10px; font-size: 13px; min-width: 110px; }
+            #movies-container { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
+        }
     </style>
 </head>
 <body>
@@ -70,7 +116,7 @@
         <div class="center-header-section">
             <div class="brand-logo">
                 <span>C</span><span>R</span><span>I</span><span>M</span><span>E</span>
-                <span style="width: 10px;"></span>
+                <span style="width: 8px;"></span>
                 <span>W</span><span>O</span><span>R</span><span>L</span><span>D</span>
             </div>
         </div>
@@ -79,52 +125,149 @@
         </div>
     </div>
 
-    <h3 style="border-right: 4px solid #e50914; padding-right: 10px; margin-top: 20px;">المسلسلات والأفلام المتاحة</h3>
+    <div class="toolbar-container">
+        <div class="filter-tabs">
+            <button class="tab-btn active" id="tab-all" onclick="switchTab('all')">كل العروض</button>
+            <button class="tab-btn" id="tab-watchlist" onclick="switchTab('watchlist')">قائمتي المفضلة ❤️</button>
+        </div>
+        <input type="text" class="search-box" id="search-input" placeholder="ابحث عن فيلم أو مسلسل..." oninput="handleSearch()">
+    </div>
+
+    <h3 id="section-title" style="border-right: 4px solid #e50914; padding-right: 10px; margin-top: 20px;">المسلسلات والأفلام المتاحة</h3>
     
     <div id="movies-container"></div>
 
-    <script src="movies.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="movies.js"></script>
     <script>
         const SUPABASE_URL = "https://wdyhgweypfquorviikxx.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkeWhnd2V5cGZxdW9ydmlpa3h4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MjQ2MDksImV4cCI6MjA5NjUwMDYwOX0.zNEqFeVZmTJynohdkP6cQKH-NWUgpsAQQ8gGlHaYoDs"; 
         
         let _supabase;
+        let currentTab = 'all';
+        let watchlistIds = [];
+
         try {
             _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         } catch(e) {
             console.error("Supabase Init Error:", e);
         }
 
-        function checkAuth() {
-            // تشغيل الـ 3D فوراً من أول ملي ثانية وبأعلى أولوية
-            if (typeof displayMovies === 'function') {
-                displayMovies();
-            }
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        async function checkAuth() {
             if (!currentUser) {
                 window.location.href = "index.html";
                 return;
             }
             document.getElementById('welcome-msg').innerText = `🕵️‍♂️ مرحباً، ${currentUser.username || 'youssef'}`;
-
+            
             if (_supabase) {
+                await fetchUserWatchlist();
+                displayMovies(movies);
+
                 _supabase
                     .from('users')
                     .select('status')
                     .eq('email', currentUser.email)
                     .limit(1)
                     .then(({ data: users, error }) => {
-                        if (!error && users && users.length > 0) {
-                            if (users[0].status !== 'approved') {
-                                localStorage.removeItem('currentUser');
-                                window.location.href = "index.html";
-                            }
+                        if (!error && users && users.length > 0 && users[0].status !== 'approved') {
+                            localStorage.removeItem('currentUser');
+                            window.location.href = "index.html";
                         }
-                    })
-                    .catch(err => console.log("Supabase safety background check completed."));
+                    });
             }
+        }
+
+        async function fetchUserWatchlist() {
+            if (!_supabase || !currentUser) return;
+            const { data } = await _supabase.from('watchlist').select('movie_id').eq('user_email', currentUser.email);
+            watchlistIds = data ? data.map(item => item.movie_id) : [];
+        }
+
+        function checkWatchlistStatus(movieId) {
+            const btn = document.getElementById(`watchlist-btn-${movieId}`);
+            if (!btn) return;
+            if (watchlistIds.includes(movieId)) {
+                btn.innerText = "❤️";
+                btn.style.borderColor = "#e50914";
+            } else {
+                btn.innerText = "➕";
+                btn.style.borderColor = "#333";
+            }
+        }
+
+        async function toggleWatchlist(event, movieId) {
+            event.stopPropagation();
+            if (!_supabase || !currentUser) return;
+
+            if (watchlistIds.includes(movieId)) {
+                await _supabase.from('watchlist').delete().eq('user_email', currentUser.email).eq('movie_id', movieId);
+            } else {
+                await _supabase.from('watchlist').insert([{ user_email: currentUser.email, movie_id: movieId }]);
+            }
+            
+            await fetchUserWatchlist();
+            if(currentTab === 'watchlist') {
+                renderWatchlistTab();
+            } else {
+                checkWatchlistStatus(movieId);
+            }
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab-all').classList.toggle('active', tab === 'all');
+            document.getElementById('tab-watchlist').classList.toggle('active', tab === 'watchlist');
+            document.getElementById('search-input').value = '';
+
+            if (tab === 'all') {
+                document.getElementById('section-title').innerText = "المسلسلات والأفلام المتاحة";
+                displayMovies(movies);
+            } else {
+                document.getElementById('section-title').innerText = "قائمتي المفضلة ❤️";
+                renderWatchlistTab();
+            }
+        }
+
+        function renderWatchlistTab() {
+            const filtered = movies.filter(m => watchlistIds.includes(m.id));
+            displayMovies(filtered);
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const sourceArray = currentTab === 'all' ? movies : movies.filter(m => watchlistIds.includes(m.id));
+            
+            const filtered = sourceArray.filter(m => 
+                m.title.toLowerCase().includes(query) || 
+                m.genre.toLowerCase().includes(query)
+            );
+            displayMovies(filtered);
+        }
+
+        async function fetchInteractions(movieId, index) {
+            if (!_supabase) return;
+            const { data: likes } = await _supabase.from('movie_interactions').select('id').eq('movie_id', movieId).eq('type', 'like');
+            const { data: dislikes } = await _supabase.from('movie_interactions').select('id').eq('movie_id', movieId).eq('type', 'dislike');
+            
+            const likeEl = document.getElementById(`like-count-${index}`);
+            const dislikeEl = document.getElementById(`dislike-count-${index}`);
+            if(likeEl) likeEl.innerText = likes ? likes.length : 0;
+            if(dislikeEl) dislikeEl.innerText = dislikes ? dislikes.length : 0;
+        }
+
+        async function handleMovieInteraction(event, movieId, index, type) {
+            event.stopPropagation();
+            if (!currentUser || !_supabase) return;
+            const { error } = await _supabase.from('movie_interactions').upsert({
+                user_email: currentUser.email,
+                movie_id: movieId,
+                type: type
+            }, { onConflict: 'user_email,movie_id' });
+
+            if (!error) fetchInteractions(movieId, index);
         }
 
         function logout() {
