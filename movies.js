@@ -19,21 +19,7 @@ const movies = [
                 video: "https://archive.org/download/detective-l-ep-2/Detective%20L%20-%20EP2.mp4",
             }
         ]
-    }, // <--- شايف الفاصلة دي؟ دي مهمة جداً عشان تفصل بين الفيلم الأول والتاني
-    // ⬇️ هنا تضيف الفيلم أو المسلسل التاني الجديد ⬇️
-{
-    id: "sherlock-holmes-movie", // معرف فريد خاص بالفيلم الجديد
-    title: "فيلم شيرلوك هولمز",
-    genre: "Mystery / ذكاء",
-    rating: "9.5",
-    poster: "https://link-to-poster-image.png", // رابط بوستر الفيلم
-    episodes: [
-      {
-        name: "الفيلم كامل",
-        video: "رابط_الفيديو_بتاع_الفيلم_هنا.mp4" // الرابط المباشر من أرشيف الإنترنت أو سيرفرك
-      }
-    ]
-  } // <--- لو مفيش أفلام تانية بعده متسيبش فاصلة هنا
+    }
 ];
 
 function displayMovies() {
