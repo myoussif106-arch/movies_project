@@ -52,12 +52,20 @@
   <main class="container">
     <section class="section" id="movies">
       <h2 class="section-title"><span>أفلامك</span> المختارة</h2>
-      
       <div class="movies-grid" id="moviesContainer">
         <p class="loading-text">جاري تحميل الأفلام...</p>
       </div>
     </section>
   </main>
+
+  <div class="video-modal" id="videoModal">
+    <div class="modal-backdrop" onclick="closeVideoModal()"></div>
+    <div class="modal-wrapper">
+      <button class="modal-close" onclick="closeVideoModal()">✕</button>
+      <div class="video-frame-container" id="videoPlayerBox">
+        </div>
+    </div>
+  </div>
 
   <footer>
     <div class="footer-content">
