@@ -28,11 +28,11 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// دالة تحديث قسم الـ Hero بالفيلم الحاصل على أعلى إعجابات
+// دالة تحديث قسم الـ Hero بالعمل الحاصل على أعلى إعجابات
 function updateTopMovieHero(movies) {
   if (!movies || movies.length === 0) return;
 
-  // ترتيب الأفلام تنازلياً حسب عدد الإعجابات
+  // ترتيب الأفلام تنازلياً حسب الإعجابات
   const sortedMovies = [...movies].sort((a, b) => (b.likes || 0) - (a.likes || 0));
   const topMovie = sortedMovies[0];
 
@@ -46,7 +46,7 @@ function updateTopMovieHero(movies) {
   if (topMovie) {
     heroSection.style.backgroundImage = `url('${topMovie.image_url}')`;
     heroTitle.textContent = topMovie.title;
-    heroDesc.textContent = `الفيلم الحاصل على المركز الأول وتفضيل الجمهور بأعلى نسبة إعجاب في الموقع.`;
+    heroDesc.textContent = `العمل الحاصل على المركز الأول وتفضيل الجمهور بأعلى نسبة إعجاب في الموقع.`;
     heroLikes.textContent = `🔥 ${topMovie.likes || 0} إعجاب`;
     heroGenre.textContent = `🔪 ${topMovie.genre || 'جريمة • غموض'}`;
     heroMeta.style.display = 'flex';
@@ -67,7 +67,7 @@ async function loadMovies() {
     return;
   }
 
-  // 1. تحديث البطل (Hero) بالفيلم الأكثر إعجاباً
+  // 1. تحديث الـ Hero بالفيلم الأعلى إعجاباً
   updateTopMovieHero(movies);
 
   // 2. بناء قائمة الأفلام بالأسفل
@@ -121,7 +121,7 @@ async function handleVote(movieId, clickedType) {
     newVote = 'none';
   }
 
-  // تحديث مباشر للواجهة (Optimistic Update)
+  // تحديث مباشر للواجهة
   if (previousVote === 'like') {
     likeSpan.textContent = Math.max(0, parseInt(likeSpan.textContent) - 1);
     likeBtn.classList.remove('voted');
@@ -144,7 +144,7 @@ async function handleVote(movieId, clickedType) {
     localStorage.setItem(storageKey, newVote);
   }
 
-  // إرسال التحديث إلى قاعدة البيانات
+  // حفظ التحديث في قاعدة البيانات
   const { error } = await supabaseClient.rpc('update_reaction', {
     target_id: movieId,
     new_type: newVote,
@@ -154,7 +154,6 @@ async function handleVote(movieId, clickedType) {
   if (error) {
     console.error("فشل حفظ التفاعل:", error);
   } else {
-    // إعادة فحص وتحديث الـ Hero إذا تغير المركز الأول
     const { data: updatedMovies } = await supabaseClient.from('movies').select('*');
     if (updatedMovies) updateTopMovieHero(updatedMovies);
   }
