@@ -87,14 +87,14 @@ body {
   display: none;
 }
 
-/* القسم الرئيسي Hero - بوستر شيرلوك هولمز السينمائي الغامض */
+/* القسم الرئيسي Hero - أجواء مسرح جريمة ودماء وتحقيق سينمائي بدون أشخاص */
 .hero {
   position: relative;
   height: 90vh;
   display: flex;
   align-items: center;
   padding: 0 5%;
-  background: url('https://images.wallpapersden.com/image/download/sherlock-holmes-detective_bWZtbmmUmZqaraWkpJRmbmdlrWZlbWU.jpg') center 20%/cover no-repeat;
+  background: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1920&q=80') center center/cover no-repeat;
 }
 
 .hero-overlay {
@@ -103,7 +103,7 @@ body {
   right: 0;
   bottom: 0;
   left: 0;
-  background: linear-gradient(90deg, rgba(11, 11, 13, 0.95) 20%, rgba(11, 11, 13, 0.55) 60%, rgba(179, 0, 0, 0.25) 100%),
+  background: linear-gradient(90deg, rgba(11, 11, 13, 0.95) 20%, rgba(11, 11, 13, 0.6) 60%, rgba(179, 0, 0, 0.3) 100%),
               linear-gradient(0deg, var(--bg-color) 0%, transparent 40%);
 }
 
