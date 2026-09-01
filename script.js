@@ -4,7 +4,6 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// متغير لحفظ رابط فيديو الفيلم الأعلى تقييماً (Hero)
 let currentTopMovieVideo = "";
 
 // التحكم في قائمة الموبايل
@@ -17,7 +16,7 @@ if (menuToggle) {
   });
 }
 
-// تغيير شريط التنقل عند التمرير
+// شريط التنقل عند التمرير
 window.addEventListener('scroll', () => {
   const navbar = document.querySelector('.navbar');
   if (navbar) {
@@ -31,7 +30,39 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// دوال تشغيل وإغلاق الفيديو (Modal)
+// دالة تصحيح روابط الفيديو لتناسب الـ Embed وتمنع خطأ Refused to Connect
+function formatVideoEmbedUrl(url) {
+  if (!url) return "";
+
+  // 1. معالجة روابط Dailymotion
+  if (url.includes('dailymotion.com/video/')) {
+    const videoId = url.split('/video/')[1].split('?')[0];
+    return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1`;
+  }
+  if (url.includes('dai.ly/')) {
+    const videoId = url.split('dai.ly/')[1].split('?')[0];
+    return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1`;
+  }
+
+  // 2. معالجة روابط YouTube
+  if (url.includes('youtube.com/watch?v=')) {
+    const videoId = url.split('v=')[1].split('&')[0];
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  }
+  if (url.includes('youtu.be/')) {
+    const videoId = url.split('youtu.be/')[1].split('?')[0];
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  }
+
+  // 3. معالجة روابط Google Drive
+  if (url.includes('drive.google.com/file/d/')) {
+    return url.replace('/view', '/preview');
+  }
+
+  return url;
+}
+
+// دوال المشغل السينمائي (Video Modal)
 function playVideo(videoUrl) {
   if (!videoUrl) {
     alert("لم يتم إضافة رابط فيديو لهذا العمل بعد!");
@@ -40,18 +71,8 @@ function playVideo(videoUrl) {
 
   const modal = document.getElementById('videoModal');
   const playerBox = document.getElementById('videoPlayerBox');
+  const finalUrl = formatVideoEmbedUrl(videoUrl);
 
-  // تحويل رابط اليوتيوب العادي إلى Embed إذا لزم الأمر
-  let finalEmbedUrl = videoUrl;
-  if (videoUrl.includes('youtube.com/watch?v=')) {
-    const videoId = videoUrl.split('v=')[1].split('&')[0];
-    finalEmbedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-  } else if (videoUrl.includes('youtu.be/')) {
-    const videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
-    finalEmbedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-  }
-
-  // دعم روابط mp4 المباشرة أو اليوتيوب/السيرفرات
   if (videoUrl.endsWith('.mp4')) {
     playerBox.innerHTML = `
       <video controls autoplay playsinline style="width:100%; height:100%;">
@@ -61,7 +82,11 @@ function playVideo(videoUrl) {
     `;
   } else {
     playerBox.innerHTML = `
-      <iframe src="${finalEmbedUrl}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+      <iframe 
+        src="${finalUrl}" 
+        allow="autoplay; encrypted-media; fullscreen; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
     `;
   }
 
@@ -72,15 +97,14 @@ function closeVideoModal() {
   const modal = document.getElementById('videoModal');
   const playerBox = document.getElementById('videoPlayerBox');
   modal.classList.remove('active');
-  playerBox.innerHTML = ''; // إيقاف تشغيل الفيديو عند الإغلاق
+  playerBox.innerHTML = '';
 }
 
-// زر تشغيل فيديو فيلم الـ Hero
 document.getElementById('heroPlayBtn').addEventListener('click', () => {
   playVideo(currentTopMovieVideo);
 });
 
-// تحديث قسم الـ Hero بالفيلم الأعلى إعجاباً
+// تحديث قسم الـ Hero بالفيلم الأعلى تفاعلاً
 function updateTopMovieHero(movies) {
   if (!movies || movies.length === 0) return;
 
@@ -105,7 +129,7 @@ function updateTopMovieHero(movies) {
   }
 }
 
-// جلب الأفلام وبناء كروت العرض
+// جلب الأفلام من Supabase
 async function loadMovies() {
   const container = document.getElementById('moviesContainer');
   if (!container) return;
@@ -145,7 +169,7 @@ async function loadMovies() {
                 👎 <span class="dislike-count">${movie.dislikes || 0}</span>
               </button>
             </div>
-            <button class="play-mini-btn" title="تشغيل الفيلم" onclick="playVideo('${movieVideo}')">▶</button>
+            <button class="play-mini-btn" title="تشغيل" onclick="playVideo('${movieVideo}')">▶</button>
           </div>
         </div>
       </div>
@@ -153,7 +177,7 @@ async function loadMovies() {
   }).join('');
 }
 
-// دالة التفاعل Like / Dislike
+// معالجة تصويت Like / Dislike
 async function handleVote(movieId, clickedType) {
   const card = document.querySelector(`.movie-card[data-id="${movieId}"]`);
   if (!card) return;
@@ -172,7 +196,6 @@ async function handleVote(movieId, clickedType) {
     newVote = 'none';
   }
 
-  // تحديث فوري للواجهة
   if (previousVote === 'like') {
     likeSpan.textContent = Math.max(0, parseInt(likeSpan.textContent) - 1);
     likeBtn.classList.remove('voted');
@@ -209,7 +232,6 @@ async function handleVote(movieId, clickedType) {
   }
 }
 
-// إغلاق نافذة الفيديو عند الضغط على زر Esc من لوحة المفاتيح
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeVideoModal();
 });
