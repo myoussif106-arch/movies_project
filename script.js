@@ -1,4 +1,4 @@
-// بيانات الاتصال الخاصة بمشروعك
+// بيانات الاتصال بقاعدة بيانات Supabase
 const SUPABASE_URL = "https://wdyhgweypfquorviikxx.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkeWhnd2V5cGZxdW9ydmlpa3h4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MjQ2MDksImV4cCI6MjA5NjUwMDYwOX0.zNEqFeVZmTJynohdkP6cQKH-NWUgpsAQQ8gGlHaYoDs";
 
@@ -14,7 +14,7 @@ if (menuToggle) {
   });
 }
 
-// تغيير مظهر الشريط العلوي عند التمرير
+// تغيير شريط التنقل عند التمرير
 window.addEventListener('scroll', () => {
   const navbar = document.querySelector('.navbar');
   if (navbar) {
@@ -28,7 +28,32 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// جلب الأفلام وعرضها
+// دالة تحديث قسم الـ Hero بالفيلم الحاصل على أعلى إعجابات
+function updateTopMovieHero(movies) {
+  if (!movies || movies.length === 0) return;
+
+  // ترتيب الأفلام تنازلياً حسب عدد الإعجابات
+  const sortedMovies = [...movies].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+  const topMovie = sortedMovies[0];
+
+  const heroSection = document.getElementById('home');
+  const heroTitle = document.getElementById('heroTitle');
+  const heroDesc = document.getElementById('heroDesc');
+  const heroMeta = document.getElementById('heroMeta');
+  const heroLikes = document.getElementById('heroLikes');
+  const heroGenre = document.getElementById('heroGenre');
+
+  if (topMovie) {
+    heroSection.style.backgroundImage = `url('${topMovie.image_url}')`;
+    heroTitle.textContent = topMovie.title;
+    heroDesc.textContent = `الفيلم الحاصل على المركز الأول وتفضيل الجمهور بأعلى نسبة إعجاب في الموقع.`;
+    heroLikes.textContent = `🔥 ${topMovie.likes || 0} إعجاب`;
+    heroGenre.textContent = `🔪 ${topMovie.genre || 'جريمة • غموض'}`;
+    heroMeta.style.display = 'flex';
+  }
+}
+
+// جلب الأفلام من Supabase وبناء الواجهة
 async function loadMovies() {
   const container = document.getElementById('moviesContainer');
   if (!container) return;
@@ -42,7 +67,10 @@ async function loadMovies() {
     return;
   }
 
-  // بناء كروت الأفلام
+  // 1. تحديث البطل (Hero) بالفيلم الأكثر إعجاباً
+  updateTopMovieHero(movies);
+
+  // 2. بناء قائمة الأفلام بالأسفل
   container.innerHTML = movies.map(movie => {
     const savedVote = localStorage.getItem(`reaction_${movie.id}`);
     const likeActive = savedVote === 'like' ? 'voted' : '';
@@ -74,7 +102,7 @@ async function loadMovies() {
   }).join('');
 }
 
-// دالة تفاعل المستخدم (Like / Dislike)
+// دالة التفاعل (Like / Dislike)
 async function handleVote(movieId, clickedType) {
   const card = document.querySelector(`.movie-card[data-id="${movieId}"]`);
   if (!card) return;
@@ -89,12 +117,11 @@ async function handleVote(movieId, clickedType) {
   
   let newVote = clickedType;
 
-  // إذا ضغط المستخدم على نفس الزر المفعل يتم إلغاء الاختيار
   if (previousVote === clickedType) {
     newVote = 'none';
   }
 
-  // تحديث مباشر للواجهة
+  // تحديث مباشر للواجهة (Optimistic Update)
   if (previousVote === 'like') {
     likeSpan.textContent = Math.max(0, parseInt(likeSpan.textContent) - 1);
     likeBtn.classList.remove('voted');
@@ -117,7 +144,7 @@ async function handleVote(movieId, clickedType) {
     localStorage.setItem(storageKey, newVote);
   }
 
-  // إرسال التحديث للسيرفر
+  // إرسال التحديث إلى قاعدة البيانات
   const { error } = await supabaseClient.rpc('update_reaction', {
     target_id: movieId,
     new_type: newVote,
@@ -126,8 +153,12 @@ async function handleVote(movieId, clickedType) {
 
   if (error) {
     console.error("فشل حفظ التفاعل:", error);
+  } else {
+    // إعادة فحص وتحديث الـ Hero إذا تغير المركز الأول
+    const { data: updatedMovies } = await supabaseClient.from('movies').select('*');
+    if (updatedMovies) updateTopMovieHero(updatedMovies);
   }
 }
 
-// تشغيل الدالة فور فتح الصفحة
+// تشغيل جلب الأفلام فور فتح الموقع
 document.addEventListener('DOMContentLoaded', loadMovies);
