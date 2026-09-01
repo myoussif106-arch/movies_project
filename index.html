@@ -18,8 +18,7 @@
     
     <nav class="nav-links" id="navLinks">
       <a href="#home" class="active">الرئيسية</a>
-      <a href="#movies">أفلام</a>
-      <a href="#series">مسلسلات</a>
+      <a href="#movies">الأفلام</a>
       <a href="#categories">التصنيفات</a>
       <a href="#watchlist">قائمتي</a>
     </nav>
@@ -34,13 +33,18 @@
   <section class="hero" id="home">
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <div class="badge">🔥 الواجهة الرئيسية</div>
-      <h1 class="movie-title">CRIME WORLD</h1>
-      <p class="movie-desc">
-        استكشف مكتبتك الخاصة من أفلام ومسلسلات الجريمة والغموض الأكثر إثارة.
+      <div class="badge" id="heroBadge">🔥 الأكثر تفضيلاً لدى الجمهور</div>
+      <h1 class="movie-title" id="heroTitle">CRIME WORLD</h1>
+      <p class="movie-desc" id="heroDesc">
+        جاري جلب تفاصيل العمل الأكثر تقييماً وإعجاباً في عالم الجريمة...
       </p>
+      <div class="movie-meta" id="heroMeta" style="display: none;">
+        <span class="likes-badge" id="heroLikes">❤️ 0 إعجاب</span>
+        <span class="genre" id="heroGenre">🔪 جريمة • غموض</span>
+      </div>
       <div class="hero-buttons">
-        <a href="#movies" class="btn btn-primary">تصفح الأفلام</a>
+        <button class="btn btn-primary" id="heroPlayBtn">▶ شاهد الآن</button>
+        <a href="#movies" class="btn btn-secondary">تصفح القائمة كاملة</a>
       </div>
     </div>
   </section>
