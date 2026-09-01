@@ -1,4 +1,4 @@
-// بيانات الاتصال الخاصة بمشروعك في Supabase
+// بيانات الاتصال الخاصة بمشروعك
 const SUPABASE_URL = "https://wdyhgweypfquorviikxx.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkeWhnd2V5cGZxdW9ydmlpa3h4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MjQ2MDksImV4cCI6MjA5NjUwMDYwOX0.zNEqFeVZmTJynohdkP6cQKH-NWUgpsAQQ8gGlHaYoDs";
 
@@ -14,7 +14,7 @@ if (menuToggle) {
   });
 }
 
-// تغيير خلفية الـ Navbar عند التمرير
+// تغيير مظهر الشريط العلوي عند التمرير
 window.addEventListener('scroll', () => {
   const navbar = document.querySelector('.navbar');
   if (navbar) {
@@ -28,7 +28,7 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// جلب الأفلام من جدول movies في قاعدة بياناتك وعرضها
+// جلب الأفلام وعرضها
 async function loadMovies() {
   const container = document.getElementById('moviesContainer');
   if (!container) return;
@@ -37,18 +37,12 @@ async function loadMovies() {
     .from('movies')
     .select('*');
 
-  if (error) {
-    console.error("خطأ في جلب الأفلام من Supabase:", error);
-    container.innerHTML = `<p style="color: #ff1a1a; font-weight: bold;">تعذر جلب الأفلام. تأكد من تشغيل كود الـ SQL في Supabase أولاً.</p>`;
+  if (error || !movies || movies.length === 0) {
+    container.innerHTML = `<p class="empty-msg">لا توجد أفلام متاحة حالياً</p>`;
     return;
   }
 
-  if (!movies || movies.length === 0) {
-    container.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center;">لا توجد أفلام مضافة حتى الآن في قاعدة البيانات. أضف أفلامك من لوحة تحكم Supabase!</p>`;
-    return;
-  }
-
-  // بناء كروت الأفلام ديناميكياً
+  // بناء كروت الأفلام
   container.innerHTML = movies.map(movie => {
     const savedVote = localStorage.getItem(`reaction_${movie.id}`);
     const likeActive = savedVote === 'like' ? 'voted' : '';
@@ -80,7 +74,7 @@ async function loadMovies() {
   }).join('');
 }
 
-// دالة التعامل مع الضغط على Like أو Dislike
+// دالة تفاعل المستخدم (Like / Dislike)
 async function handleVote(movieId, clickedType) {
   const card = document.querySelector(`.movie-card[data-id="${movieId}"]`);
   if (!card) return;
@@ -95,12 +89,12 @@ async function handleVote(movieId, clickedType) {
   
   let newVote = clickedType;
 
-  // في حال ضغط المستخدم على نفس الزر مرة ثانية يتم إلغاء التصويت
+  // إذا ضغط المستخدم على نفس الزر المفعل يتم إلغاء الاختيار
   if (previousVote === clickedType) {
     newVote = 'none';
   }
 
-  // 1. تحديث الأرقام والواجهة فوراً للزائر
+  // تحديث مباشر للواجهة
   if (previousVote === 'like') {
     likeSpan.textContent = Math.max(0, parseInt(likeSpan.textContent) - 1);
     likeBtn.classList.remove('voted');
@@ -117,14 +111,13 @@ async function handleVote(movieId, clickedType) {
     dislikeBtn.classList.add('voted');
   }
 
-  // حفظ الاختيار محلياً بجهاز الزائر
   if (newVote === 'none') {
     localStorage.removeItem(storageKey);
   } else {
     localStorage.setItem(storageKey, newVote);
   }
 
-  // 2. تحديث الإحصائيات في قاعدة بيانات Supabase
+  // إرسال التحديث للسيرفر
   const { error } = await supabaseClient.rpc('update_reaction', {
     target_id: movieId,
     new_type: newVote,
@@ -132,9 +125,9 @@ async function handleVote(movieId, clickedType) {
   });
 
   if (error) {
-    console.error("فشل إرسال التفاعل إلى Supabase:", error);
+    console.error("فشل حفظ التفاعل:", error);
   }
 }
 
-// تشغيل جلب الأفلام فور تحميل الصفحة
+// تشغيل الدالة فور فتح الصفحة
 document.addEventListener('DOMContentLoaded', loadMovies);
