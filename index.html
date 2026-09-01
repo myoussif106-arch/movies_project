@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Crime World | عالم الجريمة والغموض</title>
   <link rel="stylesheet" href="style.css">
-  <!-- خط سينمائي عربي من Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- شريط التنقل (Navbar) -->
   <header class="navbar">
     <div class="logo">
       <span class="blood-text">CRIME</span> WORLD
@@ -33,147 +31,41 @@
     </div>
   </header>
 
-  <!-- القسم الرئيسي (Hero Section) -->
   <section class="hero" id="home">
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <div class="badge">🔥 الأكثر مشاهدة الآن</div>
-      <h1 class="movie-title">THE PREY: المفترس الخفي</h1>
+      <div class="badge">🔥 الواجهة الرئيسية</div>
+      <h1 class="movie-title">CRIME WORLD</h1>
       <p class="movie-desc">
-        في شوارع المدينة المظلمة، يطارد محقق سري شبكة جرائم غامضة تترك خلفها ألغازاً دموية لا يجرؤ أحد على فكها. هل أنت مستعد لكشف الحقيقة؟
+        استكشف مكتبتك الخاصة من أفلام ومسلسلات الجريمة والغموض الأكثر إثارة.
       </p>
-      <div class="movie-meta">
-        <span class="rating">⭐ 9.4/10</span>
-        <span class="duration">⏱️ ساعتان و 15 دقيقة</span>
-        <span class="genre">🔪 إثارة | جريمة | غموض</span>
-      </div>
       <div class="hero-buttons">
-        <button class="btn btn-primary">▶ شاهد الآن</button>
-        <button class="btn btn-secondary">＋ إضافه لقائمتي</button>
+        <a href="#movies" class="btn btn-primary">تصفح الأفلام</a>
       </div>
     </div>
   </section>
 
-  <!-- شبكة الأفلام مع نظام اللايك والديسلايك -->
   <main class="container">
     <section class="section" id="movies">
-      <h2 class="section-title"><span>أفلام</span> إثارة وجريمة مختارة</h2>
+      <h2 class="section-title"><span>أفلامك</span> المختارة</h2>
       
-      <div class="movies-grid">
-        <!-- كارت فيلم 1 -->
-        <div class="movie-card" data-id="the-mark">
-          <div class="card-img-container">
-            <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80" alt="The Mark">
-            <span class="card-badge">HD</span>
-          </div>
-          <div class="card-content">
-            <h3>THE MARK</h3>
-            <p>غموض • 2025</p>
-            <div class="card-footer">
-              <div class="reaction-box">
-                <button class="vote-btn like-btn" onclick="handleVote('the-mark', 'like')">
-                  👍 <span class="like-count">0</span>
-                </button>
-                <button class="vote-btn dislike-btn" onclick="handleVote('the-mark', 'dislike')">
-                  👎 <span class="dislike-count">0</span>
-                </button>
-              </div>
-              <button class="play-mini-btn" title="تشغيل">▶</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- كارت فيلم 2 -->
-        <div class="movie-card" data-id="night-shift">
-          <div class="card-img-container">
-            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80" alt="Night Shift">
-            <span class="card-badge">4K</span>
-          </div>
-          <div class="card-content">
-            <h3>NIGHT SHIFT</h3>
-            <p>جريمة و تحقيق • 2026</p>
-            <div class="card-footer">
-              <div class="reaction-box">
-                <button class="vote-btn like-btn" onclick="handleVote('night-shift', 'like')">
-                  👍 <span class="like-count">0</span>
-                </button>
-                <button class="vote-btn dislike-btn" onclick="handleVote('night-shift', 'dislike')">
-                  👎 <span class="dislike-count">0</span>
-                </button>
-              </div>
-              <button class="play-mini-btn" title="تشغيل">▶</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- كارت فيلم 3 -->
-        <div class="movie-card" data-id="bloodlines">
-          <div class="card-img-container">
-            <img src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=600&q=80" alt="Bloodlines">
-            <span class="card-badge">HD</span>
-          </div>
-          <div class="card-content">
-            <h3>BLOODLINES</h3>
-            <p>أكشن نفسي • 2025</p>
-            <div class="card-footer">
-              <div class="reaction-box">
-                <button class="vote-btn like-btn" onclick="handleVote('bloodlines', 'like')">
-                  👍 <span class="like-count">0</span>
-                </button>
-                <button class="vote-btn dislike-btn" onclick="handleVote('bloodlines', 'dislike')">
-                  👎 <span class="dislike-count">0</span>
-                </button>
-              </div>
-              <button class="play-mini-btn" title="تشغيل">▶</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- كارت فيلم 4 -->
-        <div class="movie-card" data-id="gone-silent">
-          <div class="card-img-container">
-            <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80" alt="Gone Silent">
-            <span class="card-badge">TOP 1</span>
-          </div>
-          <div class="card-content">
-            <h3>GONE SILENT</h3>
-            <p>رعب جريمة • 2026</p>
-            <div class="card-footer">
-              <div class="reaction-box">
-                <button class="vote-btn like-btn" onclick="handleVote('gone-silent', 'like')">
-                  👍 <span class="like-count">0</span>
-                </button>
-                <button class="vote-btn dislike-btn" onclick="handleVote('gone-silent', 'dislike')">
-                  👎 <span class="dislike-count">0</span>
-                </button>
-              </div>
-              <button class="play-mini-btn" title="تشغيل">▶</button>
-            </div>
-          </div>
-        </div>
+      <div class="movies-grid" id="moviesContainer">
+        <p class="loading-text">جاري تحميل الأفلام...</p>
       </div>
     </section>
   </main>
 
-  <!-- تذييل الصفحة (Footer) -->
   <footer>
     <div class="footer-content">
       <div class="logo">
         <span class="blood-text">CRIME</span> WORLD
       </div>
       <p>بوابتك لعالم التحقيق، الألغاز، والجرائم السينمائية الغامضة.</p>
-      <div class="footer-links">
-        <a href="#">سياسة الخصوصية</a>
-        <a href="#">شروط الاستخدام</a>
-        <a href="#">مركز المساعدة</a>
-      </div>
       <p class="copyright">© 2026 Crime World. جميع الحقوق محفوظة.</p>
     </div>
   </footer>
 
-  <!-- تحميل مكتبة Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- ملف الجافاسكريبت -->
   <script src="script.js"></script>
 </body>
 </html>
