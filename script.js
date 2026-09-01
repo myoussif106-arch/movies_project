@@ -4,6 +4,9 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// متغير لحفظ رابط فيديو الفيلم الأعلى تقييماً (Hero)
+let currentTopMovieVideo = "";
+
 // التحكم في قائمة الموبايل
 const menuToggle = document.getElementById('menuToggle');
 const navLinks = document.getElementById('navLinks');
@@ -28,11 +31,59 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// دالة تحديث قسم الـ Hero بالعمل الحاصل على أعلى إعجابات
+// دوال تشغيل وإغلاق الفيديو (Modal)
+function playVideo(videoUrl) {
+  if (!videoUrl) {
+    alert("لم يتم إضافة رابط فيديو لهذا العمل بعد!");
+    return;
+  }
+
+  const modal = document.getElementById('videoModal');
+  const playerBox = document.getElementById('videoPlayerBox');
+
+  // تحويل رابط اليوتيوب العادي إلى Embed إذا لزم الأمر
+  let finalEmbedUrl = videoUrl;
+  if (videoUrl.includes('youtube.com/watch?v=')) {
+    const videoId = videoUrl.split('v=')[1].split('&')[0];
+    finalEmbedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  } else if (videoUrl.includes('youtu.be/')) {
+    const videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+    finalEmbedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  }
+
+  // دعم روابط mp4 المباشرة أو اليوتيوب/السيرفرات
+  if (videoUrl.endsWith('.mp4')) {
+    playerBox.innerHTML = `
+      <video controls autoplay playsinline style="width:100%; height:100%;">
+        <source src="${videoUrl}" type="video/mp4">
+        متصفحك لا يدعم تشغيل الفيديو.
+      </video>
+    `;
+  } else {
+    playerBox.innerHTML = `
+      <iframe src="${finalEmbedUrl}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+    `;
+  }
+
+  modal.classList.add('active');
+}
+
+function closeVideoModal() {
+  const modal = document.getElementById('videoModal');
+  const playerBox = document.getElementById('videoPlayerBox');
+  modal.classList.remove('active');
+  playerBox.innerHTML = ''; // إيقاف تشغيل الفيديو عند الإغلاق
+}
+
+// زر تشغيل فيديو فيلم الـ Hero
+document.getElementById('heroPlayBtn').addEventListener('click', () => {
+  playVideo(currentTopMovieVideo);
+});
+
+// تحديث قسم الـ Hero بالفيلم الأعلى إعجاباً
 function updateTopMovieHero(movies) {
   if (!movies || movies.length === 0) return;
 
-  // ترتيب الأفلام تنازلياً حسب الإعجابات
   const sortedMovies = [...movies].sort((a, b) => (b.likes || 0) - (a.likes || 0));
   const topMovie = sortedMovies[0];
 
@@ -50,10 +101,11 @@ function updateTopMovieHero(movies) {
     heroLikes.textContent = `🔥 ${topMovie.likes || 0} إعجاب`;
     heroGenre.textContent = `🔪 ${topMovie.genre || 'جريمة • غموض'}`;
     heroMeta.style.display = 'flex';
+    currentTopMovieVideo = topMovie.video_url || "";
   }
 }
 
-// جلب الأفلام من Supabase وبناء الواجهة
+// جلب الأفلام وبناء كروت العرض
 async function loadMovies() {
   const container = document.getElementById('moviesContainer');
   if (!container) return;
@@ -67,18 +119,17 @@ async function loadMovies() {
     return;
   }
 
-  // 1. تحديث الـ Hero بالفيلم الأعلى إعجاباً
   updateTopMovieHero(movies);
 
-  // 2. بناء قائمة الأفلام بالأسفل
   container.innerHTML = movies.map(movie => {
     const savedVote = localStorage.getItem(`reaction_${movie.id}`);
     const likeActive = savedVote === 'like' ? 'voted' : '';
     const dislikeActive = savedVote === 'dislike' ? 'voted' : '';
+    const movieVideo = movie.video_url || '';
 
     return `
       <div class="movie-card" data-id="${movie.id}">
-        <div class="card-img-container">
+        <div class="card-img-container" onclick="playVideo('${movieVideo}')">
           <img src="${movie.image_url}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/300x450/141419/ff1a1a?text=Crime+World'">
           <span class="card-badge">${movie.badge || 'HD'}</span>
         </div>
@@ -94,7 +145,7 @@ async function loadMovies() {
                 👎 <span class="dislike-count">${movie.dislikes || 0}</span>
               </button>
             </div>
-            <button class="play-mini-btn" title="تشغيل">▶</button>
+            <button class="play-mini-btn" title="تشغيل الفيلم" onclick="playVideo('${movieVideo}')">▶</button>
           </div>
         </div>
       </div>
@@ -102,7 +153,7 @@ async function loadMovies() {
   }).join('');
 }
 
-// دالة التفاعل (Like / Dislike)
+// دالة التفاعل Like / Dislike
 async function handleVote(movieId, clickedType) {
   const card = document.querySelector(`.movie-card[data-id="${movieId}"]`);
   if (!card) return;
@@ -121,7 +172,7 @@ async function handleVote(movieId, clickedType) {
     newVote = 'none';
   }
 
-  // تحديث مباشر للواجهة
+  // تحديث فوري للواجهة
   if (previousVote === 'like') {
     likeSpan.textContent = Math.max(0, parseInt(likeSpan.textContent) - 1);
     likeBtn.classList.remove('voted');
@@ -144,7 +195,6 @@ async function handleVote(movieId, clickedType) {
     localStorage.setItem(storageKey, newVote);
   }
 
-  // حفظ التحديث في قاعدة البيانات
   const { error } = await supabaseClient.rpc('update_reaction', {
     target_id: movieId,
     new_type: newVote,
@@ -152,12 +202,16 @@ async function handleVote(movieId, clickedType) {
   });
 
   if (error) {
-    console.error("فشل حفظ التفاعل:", error);
+    console.error("فشل التحديث:", error);
   } else {
     const { data: updatedMovies } = await supabaseClient.from('movies').select('*');
     if (updatedMovies) updateTopMovieHero(updatedMovies);
   }
 }
 
-// تشغيل جلب الأفلام فور فتح الموقع
+// إغلاق نافذة الفيديو عند الضغط على زر Esc من لوحة المفاتيح
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeVideoModal();
+});
+
 document.addEventListener('DOMContentLoaded', loadMovies);
