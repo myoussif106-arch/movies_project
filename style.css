@@ -87,14 +87,18 @@ body {
   display: none;
 }
 
-/* القسم الرئيسي Hero - أجواء مسرح جريمة ودماء وتحقيق سينمائي بدون أشخاص */
+/* القسم الرئيسي Hero (تتغير خلفيته تلقائياً بجافاسكريبت حسب الفيلم الأعلى إعجاباً) */
 .hero {
   position: relative;
   height: 90vh;
   display: flex;
   align-items: center;
   padding: 0 5%;
-  background: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1920&q=80') center center/cover no-repeat;
+  background-color: #070708;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: background-image 0.6s ease-in-out;
 }
 
 .hero-overlay {
@@ -103,7 +107,7 @@ body {
   right: 0;
   bottom: 0;
   left: 0;
-  background: linear-gradient(90deg, rgba(11, 11, 13, 0.95) 20%, rgba(11, 11, 13, 0.6) 60%, rgba(179, 0, 0, 0.3) 100%),
+  background: linear-gradient(90deg, rgba(11, 11, 13, 0.95) 20%, rgba(11, 11, 13, 0.65) 60%, rgba(179, 0, 0, 0.25) 100%),
               linear-gradient(0deg, var(--bg-color) 0%, transparent 40%);
 }
 
@@ -136,7 +140,28 @@ body {
   color: #ccc;
   font-size: 1.05rem;
   line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.movie-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.95rem;
   margin-bottom: 2rem;
+}
+
+.likes-badge {
+  color: #ff3333;
+  font-weight: 700;
+  background: rgba(179, 0, 0, 0.2);
+  border: 1px solid var(--blood-red);
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+.genre {
+  color: var(--text-muted);
 }
 
 .hero-buttons {
@@ -166,6 +191,16 @@ body {
   background: var(--blood-hover);
   transform: translateY(-2px);
   box-shadow: 0 0 25px rgba(255, 26, 26, 0.6);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  backdrop-filter: blur(5px);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* شبكة الأفلام */
