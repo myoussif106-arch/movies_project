@@ -1,4 +1,4 @@
-// بيانات الاتصال بقاعدة بيانات Supabase
+// بيانات الاتصال بـ Supabase
 const SUPABASE_URL = "https://wdyhgweypfquorviikxx.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkeWhnd2V5cGZxdW9ydmlpa3h4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MjQ2MDksImV4cCI6MjA5NjUwMDYwOX0.zNEqFeVZmTJynohdkP6cQKH-NWUgpsAQQ8gGlHaYoDs";
 
@@ -18,7 +18,7 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// معالجة وتصحيح روابط الفيديو للتضمين التلقائي
+// معالجة وتنسيق الروابط لتعمل في المشغل بدون حظر
 function formatVideoUrl(url) {
   if (!url) return "";
 
@@ -47,7 +47,7 @@ function formatVideoUrl(url) {
   return url;
 }
 
-// تشغيل الفيديو في المشغل الكامل
+// تشغيل الفيديو
 function launchPlayer(videoUrl) {
   if (!videoUrl) {
     alert("عذراً، لم يتم إضافة رابط تشغيل متاح بعد.");
@@ -97,7 +97,7 @@ async function fetchCatalog() {
   renderMovieCards();
 }
 
-// إعداد بانر الـ Hero
+// إعداد بانر الـ Hero المتصدر
 function setupHeroBanner(movies) {
   const sorted = [...movies].sort((a, b) => (b.likes || 0) - (a.likes || 0));
   topHeroMovie = sorted[0];
@@ -112,13 +112,13 @@ function setupHeroBanner(movies) {
   document.getElementById('heroTypeLabel').textContent = topHeroMovie.type === 'series' ? 'مسلسل أصلي' : 'فيلم أصلي';
   document.getElementById('heroQuality').textContent = topHeroMovie.badge || 'HD';
   document.getElementById('heroLikes').textContent = `🔥 ${topHeroMovie.likes || 0} إعجاب`;
-  document.getElementById('heroDesc').textContent = topHeroMovie.description || 'عمل متميز وحاصل على أعلى تقييمات الجمهور.';
+  document.getElementById('heroDesc').textContent = topHeroMovie.description || 'عمل سينمائي متميز حاز على أعلى إعجاب وتفاعل من المشاهدين.';
 
   document.getElementById('heroPlayBtn').onclick = () => openAction(topHeroMovie);
   document.getElementById('heroMoreInfoBtn').onclick = () => openDetailModal(topHeroMovie);
 }
 
-// بناء بطاقات الأعمال
+// رسم بطاقات الأعمال
 function renderMovieCards() {
   const container = document.getElementById('moviesContainer');
   const filtered = currentCategory === 'all' 
@@ -126,7 +126,7 @@ function renderMovieCards() {
     : moviesList.filter(m => (m.type || 'movie') === currentCategory);
 
   if (filtered.length === 0) {
-    container.innerHTML = `<p style="color:#777; grid-column:1/-1; text-align:center; padding:3rem 0;">لا توجد أعمال في هذا التصنيف.</p>`;
+    container.innerHTML = `<p style="color:#777; grid-column:1/-1; text-align:center; padding:3rem 0;">لا توجد أعمال في هذا القسم.</p>`;
     return;
   }
 
@@ -140,7 +140,7 @@ function renderMovieCards() {
     return `
       <div class="netflix-card" onclick="openDetailModalById('${movie.id}')">
         <div class="card-poster">
-          <img src="${movie.image_url}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/300x450/141414/e50914?text=CRIMEFLIX'">
+          <img src="${movie.image_url}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/300x450/141414/e50914?text=CRIME+WORLD'">
           <span class="card-top-tag">${tag}</span>
         </div>
         <div class="card-hover-info">
@@ -158,7 +158,7 @@ function renderMovieCards() {
   }).join('');
 }
 
-// فتح نافذة التفاصيل
+// نافذة التفاصيل
 async function openDetailModal(movie) {
   const modal = document.getElementById('detailModal');
   const heroBg = document.getElementById('modalHeroBg');
@@ -167,7 +167,7 @@ async function openDetailModal(movie) {
   document.getElementById('modalTitle').textContent = movie.title;
   document.getElementById('modalBadge').textContent = movie.badge || 'HD';
   document.getElementById('modalGenre').textContent = movie.genre || 'غموض • جريمة';
-  document.getElementById('modalDescription').textContent = movie.description || 'لا يوجد وصف متاح حالياً.';
+  document.getElementById('modalDescription').textContent = movie.description || 'لا يوجد وصف مختصر متاح حالياً.';
 
   document.getElementById('modalMainPlayBtn').onclick = () => openAction(movie);
 
@@ -238,7 +238,7 @@ function filterContent(category, element) {
   renderMovieCards();
 }
 
-// التصويت والتفاعل
+// معالجة تصويت اللايك والديسلايك واستدعاء update_reaction
 async function voteAction(id, type) {
   const key = `react_${id}`;
   const prev = localStorage.getItem(key) || 'none';
@@ -256,15 +256,21 @@ async function voteAction(id, type) {
   }
 
   renderMovieCards();
+
   if (topHeroMovie && topHeroMovie.id === id) {
     document.getElementById('heroLikes').textContent = `🔥 ${movie.likes || 0} إعجاب`;
   }
 
-  await supabaseClient.rpc('update_reaction', {
+  // حفظ التفاعل في قاعدة البيانات عبر دالة RPC
+  const { error } = await supabaseClient.rpc('update_reaction', {
     target_id: id,
     new_type: next,
     previous_type: prev
   });
+
+  if (error) {
+    console.error("خطأ في تسجيل التفاعل:", error);
+  }
 }
 
 // زر الهروب Escape
