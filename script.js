@@ -4,54 +4,40 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let allMoviesData = [];
-let currentFilter = 'all';
-let currentTopMovieVideo = "";
+let moviesList = [];
+let topHeroMovie = null;
+let currentCategory = 'all';
 
-// التحكم في قائمة الموبايل
-const menuToggle = document.getElementById('menuToggle');
-const navLinks = document.getElementById('navLinks');
-
-if (menuToggle) {
-  menuToggle.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-  });
-}
-
-// شريط التنقل عند التمرير
+// تظليل الناف بار عند التمرير
 window.addEventListener('scroll', () => {
-  const navbar = document.querySelector('.navbar');
-  if (navbar) {
-    if (window.scrollY > 50) {
-      navbar.style.backgroundColor = 'rgba(7, 7, 8, 0.95)';
-      navbar.style.boxShadow = '0 2px 10px rgba(179, 0, 0, 0.15)';
-    } else {
-      navbar.style.backgroundColor = 'transparent';
-      navbar.style.boxShadow = 'none';
-    }
+  const nav = document.getElementById('mainNav');
+  if (window.scrollY > 40) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
   }
 });
 
-// دالة تصحيح روابط الفيديو
-function formatVideoEmbedUrl(url) {
+// معالجة وتصحيح روابط الفيديو للتضمين التلقائي
+function formatVideoUrl(url) {
   if (!url) return "";
 
   if (url.includes('dailymotion.com/video/')) {
-    const videoId = url.split('/video/')[1].split('?')[0];
-    return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1&ui-start-screen-info=0&endscreen-enable=false&queue-enable=false&sharing-enable=false&ui-logo=0`;
+    const id = url.split('/video/')[1].split('?')[0];
+    return `https://www.dailymotion.com/embed/video/${id}?autoplay=1&ui-start-screen-info=0&endscreen-enable=false&queue-enable=false`;
   }
   if (url.includes('dai.ly/')) {
-    const videoId = url.split('dai.ly/')[1].split('?')[0];
-    return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1&ui-start-screen-info=0&endscreen-enable=false&queue-enable=false&sharing-enable=false&ui-logo=0`;
+    const id = url.split('dai.ly/')[1].split('?')[0];
+    return `https://www.dailymotion.com/embed/video/${id}?autoplay=1&ui-start-screen-info=0&endscreen-enable=false&queue-enable=false`;
   }
 
   if (url.includes('youtube.com/watch?v=')) {
-    const videoId = url.split('v=')[1].split('&')[0];
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+    const id = url.split('v=')[1].split('&')[0];
+    return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
   }
   if (url.includes('youtu.be/')) {
-    const videoId = url.split('youtu.be/')[1].split('?')[0];
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+    const id = url.split('youtu.be/')[1].split('?')[0];
+    return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
   }
 
   if (url.includes('drive.google.com/file/d/')) {
@@ -61,114 +47,110 @@ function formatVideoEmbedUrl(url) {
   return url;
 }
 
-// المشغل السينمائي
-function playVideo(videoUrl) {
+// تشغيل الفيديو في المشغل الكامل
+function launchPlayer(videoUrl) {
   if (!videoUrl) {
-    alert("لم يتم إضافة رابط فيديو لهذا العمل بعد!");
+    alert("عذراً، لم يتم إضافة رابط تشغيل متاح بعد.");
     return;
   }
 
-  const modal = document.getElementById('videoModal');
-  const playerBox = document.getElementById('videoPlayerBox');
-  const finalUrl = formatVideoEmbedUrl(videoUrl);
+  closeDetailModal();
+
+  const playerModal = document.getElementById('playerModal');
+  const embedHolder = document.getElementById('videoEmbedHolder');
+  const finalUrl = formatVideoUrl(videoUrl);
 
   if (videoUrl.endsWith('.mp4')) {
-    playerBox.innerHTML = `
-      <video controls autoplay playsinline style="width:100%; height:100%;">
+    embedHolder.innerHTML = `
+      <video controls autoplay playsinline style="width:100%;height:100%;">
         <source src="${videoUrl}" type="video/mp4">
-        متصفحك لا يدعم تشغيل الفيديو.
       </video>
     `;
   } else {
-    playerBox.innerHTML = `
-      <iframe 
-        src="${finalUrl}" 
-        allow="autoplay; encrypted-media; fullscreen; picture-in-picture" 
-        allowfullscreen>
-      </iframe>
+    embedHolder.innerHTML = `
+      <iframe src="${finalUrl}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
     `;
   }
 
-  modal.classList.add('active');
+  playerModal.classList.add('active');
 }
 
-function closeVideoModal() {
-  const modal = document.getElementById('videoModal');
-  const playerBox = document.getElementById('videoPlayerBox');
-  modal.classList.remove('active');
-  playerBox.innerHTML = '';
+function closePlayer() {
+  const playerModal = document.getElementById('playerModal');
+  const embedHolder = document.getElementById('videoEmbedHolder');
+  playerModal.classList.remove('active');
+  embedHolder.innerHTML = '';
 }
 
-document.getElementById('heroPlayBtn').addEventListener('click', () => {
-  playVideo(currentTopMovieVideo);
-});
-
-// تحديث قسم الـ Hero بالعمل المتصدر
-function updateTopMovieHero(movies) {
-  if (!movies || movies.length === 0) return;
-
-  const sortedMovies = [...movies].sort((a, b) => (b.likes || 0) - (a.likes || 0));
-  const topMovie = sortedMovies[0];
-
-  const heroSection = document.getElementById('home');
-  const heroTitle = document.getElementById('heroTitle');
-  const heroDesc = document.getElementById('heroDesc');
-  const heroMeta = document.getElementById('heroMeta');
-  const heroLikes = document.getElementById('heroLikes');
-  const heroTypeBadge = document.getElementById('heroTypeBadge');
-
-  if (topMovie) {
-    heroSection.style.backgroundImage = `url('${topMovie.image_url}')`;
-    heroTitle.textContent = topMovie.title;
-    const typeLabel = topMovie.type === 'series' ? 'مسلسل' : 'فيلم';
-    heroDesc.textContent = `${typeLabel} التحقيق والجريمة الحاصل على أعلى تصويت وتفضيل في المنصة.`;
-    heroLikes.textContent = `🔥 ${topMovie.likes || 0} إعجاب`;
-    heroTypeBadge.textContent = topMovie.type === 'series' ? '📺 مسلسل' : '🎬 فيلم';
-    heroMeta.style.display = 'flex';
-    currentTopMovieVideo = topMovie.video_url || "";
-  }
-}
-
-// رسم بطاقات الأعمال حسب الفلتر المختار
-function renderCards() {
+// جلب الأعمال
+async function fetchCatalog() {
   const container = document.getElementById('moviesContainer');
-  if (!container) return;
+  const { data: movies, error } = await supabaseClient.from('movies').select('*');
 
-  const filtered = currentFilter === 'all' 
-    ? allMoviesData 
-    : allMoviesData.filter(m => (m.type || 'movie') === currentFilter);
+  if (error || !movies || movies.length === 0) {
+    container.innerHTML = `<p style="color:#777; grid-column:1/-1; text-align:center; padding:3rem 0;">لا توجد أعمال متاحة حالياً.</p>`;
+    return;
+  }
+
+  moviesList = movies;
+  setupHeroBanner(movies);
+  renderMovieCards();
+}
+
+// إعداد بانر الـ Hero
+function setupHeroBanner(movies) {
+  const sorted = [...movies].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+  topHeroMovie = sorted[0];
+
+  if (!topHeroMovie) return;
+
+  const banner = document.getElementById('heroBanner');
+  const bgImg = topHeroMovie.backdrop_url || topHeroMovie.image_url;
+  banner.style.backgroundImage = `url('${bgImg}')`;
+
+  document.getElementById('heroTitle').textContent = topHeroMovie.title;
+  document.getElementById('heroTypeLabel').textContent = topHeroMovie.type === 'series' ? 'مسلسل أصلي' : 'فيلم أصلي';
+  document.getElementById('heroQuality').textContent = topHeroMovie.badge || 'HD';
+  document.getElementById('heroLikes').textContent = `🔥 ${topHeroMovie.likes || 0} إعجاب`;
+  document.getElementById('heroDesc').textContent = topHeroMovie.description || 'عمل متميز وحاصل على أعلى تقييمات الجمهور.';
+
+  document.getElementById('heroPlayBtn').onclick = () => openAction(topHeroMovie);
+  document.getElementById('heroMoreInfoBtn').onclick = () => openDetailModal(topHeroMovie);
+}
+
+// بناء بطاقات الأعمال
+function renderMovieCards() {
+  const container = document.getElementById('moviesContainer');
+  const filtered = currentCategory === 'all' 
+    ? moviesList 
+    : moviesList.filter(m => (m.type || 'movie') === currentCategory);
 
   if (filtered.length === 0) {
-    container.innerHTML = `<p class="empty-msg">لا توجد أعمال متاحة في هذا القسم حالياً.</p>`;
+    container.innerHTML = `<p style="color:#777; grid-column:1/-1; text-align:center; padding:3rem 0;">لا توجد أعمال في هذا التصنيف.</p>`;
     return;
   }
 
   container.innerHTML = filtered.map(movie => {
-    const savedVote = localStorage.getItem(`reaction_${movie.id}`);
-    const likeActive = savedVote === 'like' ? 'voted' : '';
-    const dislikeActive = savedVote === 'dislike' ? 'voted' : '';
-    const movieVideo = movie.video_url || '';
-    const typeTag = (movie.type === 'series') ? '📺 مسلسل' : '🎬 فيلم';
+    const isSeries = movie.type === 'series';
+    const tag = isSeries ? 'مسلسل' : 'فيلم';
+    const saved = localStorage.getItem(`react_${movie.id}`);
+    const likeVoted = saved === 'like' ? 'voted-like' : '';
+    const dislikeVoted = saved === 'dislike' ? 'voted-dislike' : '';
 
     return `
-      <div class="movie-card" data-id="${movie.id}">
-        <div class="card-img-container" onclick="playVideo('${movieVideo}')">
-          <img src="${movie.image_url}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/300x450/141419/ff1a1a?text=Crime+World'">
-          <span class="card-badge">${movie.badge || 'HD'}</span>
-          <span class="card-type-tag">${typeTag}</span>
+      <div class="netflix-card" onclick="openDetailModalById('${movie.id}')">
+        <div class="card-poster">
+          <img src="${movie.image_url}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/300x450/141414/e50914?text=CRIMEFLIX'">
+          <span class="card-top-tag">${tag}</span>
         </div>
-        <div class="card-content">
-          <h3>${movie.title}</h3>
-          <div class="card-footer">
-            <div class="reaction-box">
-              <button class="vote-btn like-btn ${likeActive}" onclick="handleVote('${movie.id}', 'like')">
-                👍 <span class="like-count">${movie.likes || 0}</span>
-              </button>
-              <button class="vote-btn dislike-btn ${dislikeActive}" onclick="handleVote('${movie.id}', 'dislike')">
-                👎 <span class="dislike-count">${movie.dislikes || 0}</span>
-              </button>
+        <div class="card-hover-info">
+          <h4 class="card-title">${movie.title}</h4>
+          <div class="card-quick-actions">
+            <button class="card-play-circle" title="تشغيل" onclick="event.stopPropagation(); openActionById('${movie.id}')">▶</button>
+            <div class="vote-actions">
+              <button class="vote-chip ${likeVoted}" onclick="event.stopPropagation(); voteAction('${movie.id}', 'like')">👍 ${movie.likes || 0}</button>
+              <button class="vote-chip ${dislikeVoted}" onclick="event.stopPropagation(); voteAction('${movie.id}', 'dislike')">👎</button>
             </div>
-            <button class="play-mini-btn" title="تشغيل" onclick="playVideo('${movieVideo}')">▶</button>
           </div>
         </div>
       </div>
@@ -176,102 +158,121 @@ function renderCards() {
   }).join('');
 }
 
-// دالة الفلترة (الكل / أفلام / مسلسلات)
-function filterContent(type) {
-  currentFilter = type;
-
-  // تحديث حالة الأزرار النشطة
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.filter === type);
-  });
-
-  renderCards();
-}
-
-// جلب الأعمال من Supabase
-async function loadMovies() {
-  const container = document.getElementById('moviesContainer');
-  if (!container) return;
-
-  const { data: movies, error } = await supabaseClient
-    .from('movies')
-    .select('*');
-
-  if (error || !movies || movies.length === 0) {
-    container.innerHTML = `<p class="empty-msg">لا توجد أعمال متاحة حالياً</p>`;
-    return;
-  }
-
-  allMoviesData = movies;
-  updateTopMovieHero(movies);
-  renderCards();
-}
-
-// معالجة تصويت Like / Dislike
-async function handleVote(movieId, clickedType) {
-  const card = document.querySelector(`.movie-card[data-id="${movieId}"]`);
-  if (!card) return;
-
-  const likeBtn = card.querySelector('.like-btn');
-  const dislikeBtn = card.querySelector('.dislike-btn');
-  const likeSpan = card.querySelector('.like-count');
-  const dislikeSpan = card.querySelector('.dislike-count');
-
-  const storageKey = `reaction_${movieId}`;
-  const previousVote = localStorage.getItem(storageKey) || 'none';
+// فتح نافذة التفاصيل
+async function openDetailModal(movie) {
+  const modal = document.getElementById('detailModal');
+  const heroBg = document.getElementById('modalHeroBg');
   
-  let newVote = clickedType;
+  heroBg.style.backgroundImage = `url('${movie.backdrop_url || movie.image_url}')`;
+  document.getElementById('modalTitle').textContent = movie.title;
+  document.getElementById('modalBadge').textContent = movie.badge || 'HD';
+  document.getElementById('modalGenre').textContent = movie.genre || 'غموض • جريمة';
+  document.getElementById('modalDescription').textContent = movie.description || 'لا يوجد وصف متاح حالياً.';
 
-  if (previousVote === clickedType) {
-    newVote = 'none';
-  }
+  document.getElementById('modalMainPlayBtn').onclick = () => openAction(movie);
 
-  if (previousVote === 'like') {
-    likeSpan.textContent = Math.max(0, parseInt(likeSpan.textContent) - 1);
-    likeBtn.classList.remove('voted');
-  } else if (previousVote === 'dislike') {
-    dislikeSpan.textContent = Math.max(0, parseInt(dislikeSpan.textContent) - 1);
-    dislikeBtn.classList.remove('voted');
-  }
+  const episodesSection = document.getElementById('episodesSection');
+  const episodesList = document.getElementById('episodesListContainer');
 
-  if (newVote === 'like') {
-    likeSpan.textContent = parseInt(likeSpan.textContent) + 1;
-    likeBtn.classList.add('voted');
-  } else if (newVote === 'dislike') {
-    dislikeSpan.textContent = parseInt(dislikeSpan.textContent) + 1;
-    dislikeBtn.classList.add('voted');
-  }
+  if (movie.type === 'series') {
+    episodesSection.style.display = 'block';
+    episodesList.innerHTML = `<p style="color:#777;">جاري جلب الحلقات...</p>`;
 
-  if (newVote === 'none') {
-    localStorage.removeItem(storageKey);
+    const { data: episodes } = await supabaseClient
+      .from('episodes')
+      .select('*')
+      .eq('series_id', movie.id)
+      .order('episode_number', { ascending: true });
+
+    if (episodes && episodes.length > 0) {
+      episodesList.innerHTML = episodes.map(ep => `
+        <div class="episode-card" onclick="launchPlayer('${ep.video_url}')">
+          <span class="ep-number">${ep.episode_number}</span>
+          <div class="ep-info">
+            <div class="ep-top-bar">
+              <span class="ep-title-text">${ep.title}</span>
+              <span class="ep-duration">${ep.duration || '45 دقيقة'}</span>
+            </div>
+            <p class="ep-desc">${ep.overview || 'اضغط لمشاهدة الحلقة بجودة عالية.'}</p>
+          </div>
+          <button class="ep-play-btn">▶</button>
+        </div>
+      `).join('');
+    } else {
+      episodesList.innerHTML = `<p style="color:#777; padding:1rem 0;">لم يتم إدراج حلقات لهذا المسلسل بعد.</p>`;
+    }
   } else {
-    localStorage.setItem(storageKey, newVote);
+    episodesSection.style.display = 'none';
   }
 
-  // تحديث البيانات محلياً للمحافظة على الترتيب والفلترة
-  const targetItem = allMoviesData.find(m => m.id === movieId);
-  if (targetItem) {
-    if (previousVote === 'like') targetItem.likes = Math.max(0, (targetItem.likes || 0) - 1);
-    if (previousVote === 'dislike') targetItem.dislikes = Math.max(0, (targetItem.dislikes || 0) - 1);
-    if (newVote === 'like') targetItem.likes = (targetItem.likes || 0) + 1;
-    if (newVote === 'dislike') targetItem.dislikes = (targetItem.dislikes || 0) + 1;
-  }
+  modal.classList.add('active');
+}
 
-  const { error } = await supabaseClient.rpc('update_reaction', {
-    target_id: movieId,
-    new_type: newVote,
-    previous_type: previousVote
-  });
+function openDetailModalById(id) {
+  const item = moviesList.find(m => m.id === id);
+  if (item) openDetailModal(item);
+}
 
-  if (error) {
-    console.error("فشل التحديث:", error);
+function closeDetailModal() {
+  document.getElementById('detailModal').classList.remove('active');
+}
+
+function openAction(item) {
+  if (item.type === 'series') {
+    openDetailModal(item);
   } else {
-    updateTopMovieHero(allMoviesData);
+    launchPlayer(item.video_url);
   }
 }
 
+function openActionById(id) {
+  const item = moviesList.find(m => m.id === id);
+  if (item) openAction(item);
+}
+
+// فلترة المحتوى
+function filterContent(category, element) {
+  currentCategory = category;
+  document.querySelectorAll('.pill, .nav-item').forEach(el => el.classList.remove('active'));
+  if (element) element.classList.add('active');
+  renderMovieCards();
+}
+
+// التصويت والتفاعل
+async function voteAction(id, type) {
+  const key = `react_${id}`;
+  const prev = localStorage.getItem(key) || 'none';
+  let next = (prev === type) ? 'none' : type;
+
+  if (next === 'none') localStorage.removeItem(key);
+  else localStorage.setItem(key, next);
+
+  const movie = moviesList.find(m => m.id === id);
+  if (movie) {
+    if (prev === 'like') movie.likes = Math.max(0, (movie.likes || 0) - 1);
+    if (prev === 'dislike') movie.dislikes = Math.max(0, (movie.dislikes || 0) - 1);
+    if (next === 'like') movie.likes = (movie.likes || 0) + 1;
+    if (next === 'dislike') movie.dislikes = (movie.dislikes || 0) + 1;
+  }
+
+  renderMovieCards();
+  if (topHeroMovie && topHeroMovie.id === id) {
+    document.getElementById('heroLikes').textContent = `🔥 ${movie.likes || 0} إعجاب`;
+  }
+
+  await supabaseClient.rpc('update_reaction', {
+    target_id: id,
+    new_type: next,
+    previous_type: prev
+  });
+}
+
+// زر الهروب Escape
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeVideoModal();
+  if (e.key === 'Escape') {
+    closePlayer();
+    closeDetailModal();
+  }
 });
 
-document.addEventListener('DOMContentLoaded', loadMovies);
+document.addEventListener('DOMContentLoaded', fetchCatalog);
