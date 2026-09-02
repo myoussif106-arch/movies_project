@@ -1,12 +1,11 @@
 :root {
-  --netflix-black: #141414;
-  --netflix-dark: #080808;
-  --netflix-red: #E50914;
-  --netflix-red-hover: #b80710;
-  --netflix-gray: #e5e5e5;
-  --netflix-muted: #808080;
-  --netflix-card-bg: #181818;
-  --netflix-border: #333333;
+  --cw-black: #141414;
+  --cw-dark: #080808;
+  --cw-red: #E50914;
+  --cw-red-hover: #b80710;
+  --cw-muted: #808080;
+  --cw-card-bg: #181818;
+  --cw-border: #333333;
   --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
@@ -19,13 +18,13 @@
 }
 
 body {
-  background-color: var(--netflix-black);
+  background-color: var(--cw-black);
   color: #fff;
   overflow-x: hidden;
   direction: rtl;
 }
 
-/* ================= شريط التنقل ================= */
+/* Navbar */
 .netflix-nav {
   position: fixed;
   top: 0;
@@ -36,13 +35,13 @@ body {
   justify-content: space-between;
   align-items: center;
   z-index: 1000;
-  background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+  background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
   transition: background-color 0.4s ease;
 }
 
 .netflix-nav.scrolled {
-  background-color: var(--netflix-dark);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+  background-color: var(--cw-dark);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.8);
 }
 
 .nav-left {
@@ -54,22 +53,20 @@ body {
 .brand-logo {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 1px;
   cursor: pointer;
 }
 
-.n-symbol {
-  font-size: 2.2rem;
-  font-weight: 900;
-  color: var(--netflix-red);
-  letter-spacing: -1px;
+.logo-red {
+  color: var(--cw-red);
+  text-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
 }
 
-.logo-text {
-  font-size: 1.4rem;
-  font-weight: 900;
-  color: var(--netflix-red);
-  letter-spacing: 1px;
+.logo-white {
+  color: #ffffff;
 }
 
 .nav-menu {
@@ -102,11 +99,11 @@ body {
   background: transparent;
   border: none;
   color: #fff;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   cursor: pointer;
 }
 
-/* ================= البانر الرئيسي Hero ================= */
+/* البانر Hero */
 .netflix-hero {
   position: relative;
   height: 85vh;
@@ -114,7 +111,7 @@ body {
   display: flex;
   align-items: center;
   padding: 0 4%;
-  background-color: var(--netflix-dark);
+  background-color: var(--cw-dark);
   background-size: cover;
   background-position: center 20%;
   transition: background-image 0.8s ease-in-out;
@@ -132,7 +129,7 @@ body {
   left: 0;
   right: 0;
   height: 14rem;
-  background: linear-gradient(180deg, transparent 0%, rgba(20,20,20,0.6) 40%, var(--netflix-black) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(20,20,20,0.6) 40%, var(--cw-black) 100%);
 }
 
 .hero-container {
@@ -147,14 +144,17 @@ body {
   gap: 6px;
   font-size: 0.95rem;
   font-weight: 800;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   color: #fff;
   margin-bottom: 0.8rem;
 }
 
-.n-small {
-  color: var(--netflix-red);
-  font-size: 1.4rem;
+.badge-accent {
+  background: var(--cw-red);
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 0.8rem;
   font-weight: 900;
 }
 
@@ -188,7 +188,7 @@ body {
 }
 
 .hero-likes-count {
-  color: #e50914;
+  color: var(--cw-red);
   font-weight: 700;
 }
 
@@ -249,7 +249,7 @@ body {
   background-color: rgba(109, 109, 110, 0.4);
 }
 
-/* ================= مكتبة المحتوى والفلترة ================= */
+/* محتوى الشبكة والفلترة */
 .netflix-content {
   padding: 0 4% 4rem 4%;
   position: relative;
@@ -297,7 +297,6 @@ body {
   color: #fff;
 }
 
-/* بطاقات الأفلام والمسلسلات */
 .netflix-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -306,7 +305,7 @@ body {
 
 .netflix-card {
   position: relative;
-  background-color: var(--netflix-card-bg);
+  background-color: var(--cw-card-bg);
   border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
@@ -337,7 +336,7 @@ body {
   top: 8px;
   right: 8px;
   background: rgba(0, 0, 0, 0.75);
-  color: var(--netflix-red);
+  color: var(--cw-red);
   font-weight: 900;
   font-size: 0.75rem;
   padding: 2px 6px;
@@ -346,7 +345,7 @@ body {
 
 .card-hover-info {
   padding: 0.9rem;
-  background: var(--netflix-card-bg);
+  background: var(--cw-card-bg);
 }
 
 .card-title {
@@ -381,7 +380,7 @@ body {
 
 .card-play-circle:hover {
   transform: scale(1.15);
-  background: var(--netflix-red);
+  background: var(--cw-red);
   color: #fff;
 }
 
@@ -401,17 +400,18 @@ body {
   display: flex;
   align-items: center;
   gap: 3px;
+  transition: var(--transition);
 }
 
 .vote-chip.voted-like {
-  background: var(--netflix-red);
+  background: var(--cw-red);
 }
 
 .vote-chip.voted-dislike {
   background: #444;
 }
 
-/* ================= نافذة تفاصيل نيتفليكس ================= */
+/* Modal تفاصيل العمل */
 .detail-modal {
   position: fixed;
   inset: 0;
@@ -440,7 +440,7 @@ body {
   max-width: 820px;
   max-height: 90vh;
   overflow-y: auto;
-  background-color: var(--netflix-card-bg);
+  background-color: var(--cw-card-bg);
   border-radius: 10px;
   box-shadow: 0 0 50px rgba(0,0,0,0.9);
 }
@@ -470,7 +470,7 @@ body {
 .detail-hero-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, var(--netflix-card-bg) 0%, transparent 60%);
+  background: linear-gradient(0deg, var(--cw-card-bg) 0%, transparent 60%);
 }
 
 .detail-hero-actions {
@@ -505,7 +505,7 @@ body {
 }
 
 .detail-genre-text {
-  color: var(--netflix-muted);
+  color: var(--cw-muted);
   margin-right: 12px;
 }
 
@@ -516,9 +516,9 @@ body {
   margin-bottom: 2rem;
 }
 
-/* قسم الحلقات */
+/* الحلقات */
 .episodes-section {
-  border-top: 1px solid var(--netflix-border);
+  border-top: 1px solid var(--cw-border);
   padding-top: 1.5rem;
 }
 
@@ -535,7 +535,7 @@ body {
 }
 
 .season-label {
-  color: var(--netflix-muted);
+  color: var(--cw-muted);
   font-weight: 700;
 }
 
@@ -563,7 +563,7 @@ body {
 .ep-number {
   font-size: 1.4rem;
   font-weight: 800;
-  color: var(--netflix-muted);
+  color: var(--cw-muted);
   width: 28px;
 }
 
@@ -584,7 +584,7 @@ body {
 
 .ep-duration {
   font-size: 0.85rem;
-  color: var(--netflix-muted);
+  color: var(--cw-muted);
 }
 
 .ep-desc {
@@ -605,7 +605,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* ================= مشغل الفيديو الكامل ================= */
+/* مشغل الفيديو الشامل */
 .player-overlay {
   position: fixed;
   inset: 0;
@@ -650,20 +650,19 @@ body {
   border: none;
 }
 
-/* تذييل الصفحة */
+/* Footer */
 .netflix-footer {
   padding: 4rem 4% 3rem;
   border-top: 1px solid #222;
-  color: var(--netflix-muted);
+  color: var(--cw-muted);
   font-size: 0.85rem;
   text-align: center;
 }
 
 .footer-note {
-  margin-bottom: 1rem;
+  margin-bottom: 0.6rem;
 }
 
-/* الموبايل */
 @media (max-width: 768px) {
   .nav-menu { display: none; }
   .hero-title { font-size: 2.2rem; }
