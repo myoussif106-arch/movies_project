@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crime World | عالم الجريمة والغموض</title>
+  <title>Crime World | أفلام ومسلسلات الجريمة والغموض</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,6 +11,7 @@
 </head>
 <body>
 
+  <!-- شريط التنقل (Navbar) -->
   <header class="navbar">
     <div class="logo">
       <span class="blood-text">CRIME</span> WORLD
@@ -18,9 +19,8 @@
     
     <nav class="nav-links" id="navLinks">
       <a href="#home" class="active">الرئيسية</a>
-      <a href="#movies">الأفلام</a>
-      <a href="#categories">التصنيفات</a>
-      <a href="#watchlist">قائمتي</a>
+      <a href="#browse" onclick="filterContent('movie')">الأفلام</a>
+      <a href="#browse" onclick="filterContent('series')">المسلسلات</a>
     </nav>
 
     <div class="nav-actions">
@@ -30,6 +30,7 @@
     </div>
   </header>
 
+  <!-- القسم الرئيسي Hero -->
   <section class="hero" id="home">
     <div class="hero-overlay"></div>
     <div class="hero-content">
@@ -40,39 +41,51 @@
       </p>
       <div class="movie-meta" id="heroMeta" style="display: none;">
         <span class="likes-badge" id="heroLikes">❤️ 0 إعجاب</span>
-        <span class="genre" id="heroGenre">🔪 جريمة • غموض</span>
+        <span class="genre" id="heroTypeBadge">🎬 عمل مميز</span>
       </div>
       <div class="hero-buttons">
         <button class="btn btn-primary" id="heroPlayBtn">▶ شاهد الآن</button>
-        <a href="#movies" class="btn btn-secondary">تصفح القائمة كاملة</a>
+        <a href="#browse" class="btn btn-secondary">تصفح القائمة كاملة</a>
       </div>
     </div>
   </section>
 
-  <main class="container">
-    <section class="section" id="movies">
-      <h2 class="section-title"><span>أفلامك</span> المختارة</h2>
+  <!-- قسم التصفح وفلترة الأفلام والمسلسلات -->
+  <main class="container" id="browse">
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title"><span>مكتبة</span> الأعمال</h2>
+        
+        <!-- أزرار الفلترة: الكل / أفلام / مسلسلات -->
+        <div class="filter-tabs">
+          <button class="tab-btn active" data-filter="all" onclick="filterContent('all')">الكل</button>
+          <button class="tab-btn" data-filter="movie" onclick="filterContent('movie')">أفلام 🎬</button>
+          <button class="tab-btn" data-filter="series" onclick="filterContent('series')">مسلسلات 📺</button>
+        </div>
+      </div>
+
       <div class="movies-grid" id="moviesContainer">
-        <p class="loading-text">جاري تحميل الأفلام...</p>
+        <p class="loading-text">جاري تحميل الأعمال...</p>
       </div>
     </section>
   </main>
 
+  <!-- نافذة مشغل الفيديو (Video Modal) -->
   <div class="video-modal" id="videoModal">
     <div class="modal-backdrop" onclick="closeVideoModal()"></div>
     <div class="modal-wrapper">
       <button class="modal-close" onclick="closeVideoModal()">✕</button>
-      <div class="video-frame-container" id="videoPlayerBox">
-        </div>
+      <div class="video-frame-container" id="videoPlayerBox"></div>
     </div>
   </div>
 
+  <!-- تذييل الصفحة (Footer) -->
   <footer>
     <div class="footer-content">
       <div class="logo">
         <span class="blood-text">CRIME</span> WORLD
       </div>
-      <p>بوابتك لعالم التحقيق، الألغاز، والجرائم السينمائية الغامضة.</p>
+      <p>بوابتك المتكاملة لأفضل أفلام ومسلسلات الجريمة والتحقيق والغموض.</p>
       <p class="copyright">© 2026 Crime World. جميع الحقوق محفوظة.</p>
     </div>
   </footer>
