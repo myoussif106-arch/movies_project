@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRIMEFLIX | بوابتك لعالم الجريمة والغموض</title>
+  <title>CRIME WORLD | بوابتك لعالم الجريمة والغموض</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,12 +11,12 @@
 </head>
 <body>
 
-  <!-- شريط التنقل بأسلوب Netflix بدون حساب أو تسجيل دخول -->
+  <!-- شريط التنقل بأسلوب Netflix باسم الموقع الأصلي CRIME WORLD -->
   <header class="netflix-nav" id="mainNav">
     <div class="nav-left">
       <div class="brand-logo">
-        <span class="n-symbol">N</span>
-        <span class="logo-text">CRIMEFLIX</span>
+        <span class="logo-red">CRIME</span>
+        <span class="logo-white">WORLD</span>
       </div>
       <nav class="nav-menu">
         <button class="nav-item active" onclick="filterContent('all', this)">الرئيسية</button>
@@ -31,23 +31,23 @@
     </div>
   </header>
 
-  <!-- البانر الرئيسي Hero بدون تصنيف عمري -->
+  <!-- البانر الرئيسي Hero -->
   <section class="netflix-hero" id="heroBanner">
     <div class="hero-vignette"></div>
     <div class="hero-bottom-fade"></div>
     
     <div class="hero-container">
       <div class="netflix-badge" id="heroBadge">
-        <span class="n-small">N</span> <span id="heroTypeLabel">عمل أصلي</span>
+        <span class="badge-accent">CW</span> <span id="heroTypeLabel">عمل مميز</span>
       </div>
       <h1 class="hero-title" id="heroTitle">جاري التحميل...</h1>
       <div class="hero-meta" id="heroMeta">
         <span class="match-score">99% تطابق</span>
-        <span class="quality-tag" id="heroQuality">4K Ultra HD</span>
+        <span class="quality-tag" id="heroQuality">HD</span>
         <span class="hero-likes-count" id="heroLikes">🔥 0 إعجاب</span>
       </div>
       <p class="hero-description" id="heroDesc">
-        جاري جلب تفاصيل العمل الأعلى تقييماً...
+        جاري جلب تفاصيل العمل الأكثر تصويتاً وإعجاباً...
       </p>
       <div class="hero-cta-buttons">
         <button class="btn-netflix-play" id="heroPlayBtn">
@@ -64,7 +64,7 @@
   <main class="netflix-content">
     <section class="netflix-row">
       <div class="row-header">
-        <h2 class="row-title" id="rowCategoryTitle">الأعمال المميزة والمقترحة لك</h2>
+        <h2 class="row-title" id="rowCategoryTitle">الأعمال المميزة</h2>
         <div class="filter-pills">
           <button class="pill active" data-filter="all" onclick="filterContent('all', this)">الكل</button>
           <button class="pill" data-filter="movie" onclick="filterContent('movie', this)">الأفلام</button>
@@ -73,18 +73,17 @@
       </div>
 
       <div class="netflix-grid" id="moviesContainer">
-        <!-- الكروت تظهر هنا -->
+        <!-- كروت الأفلام والمسلسلات تظهر هنا -->
       </div>
     </section>
   </main>
 
-  <!-- نافذة تفاصيل العمل بأسلوب Netflix Modal (خالية من العمر أو التسجيل) -->
+  <!-- نافذة تفاصيل العمل بأسلوب Netflix Modal (مع الحلقات للمسلسلات) -->
   <div class="detail-modal" id="detailModal">
     <div class="detail-backdrop" onclick="closeDetailModal()"></div>
     <div class="detail-card">
       <button class="detail-close-btn" onclick="closeDetailModal()">✕</button>
       
-      <!-- هيدر النافذة مع صورة البانر وزر التشغيل -->
       <div class="detail-hero" id="modalHeroBg">
         <div class="detail-hero-gradient"></div>
         <div class="detail-hero-actions">
@@ -97,33 +96,30 @@
         </div>
       </div>
 
-      <!-- محتوى التفاصيل السفلي -->
       <div class="detail-body">
         <div class="detail-meta-row">
           <div class="meta-left">
             <span class="match-score">98% تطابق</span>
             <span class="quality-tag" id="modalBadge">HD</span>
-            <span class="detail-genre-text" id="modalGenre">جريمة • تحقيق</span>
+            <span class="detail-genre-text" id="modalGenre">جريمة • غموض</span>
           </div>
         </div>
 
         <p class="detail-overview" id="modalDescription"></p>
 
-        <!-- قسم الحلقات للمسلسلات -->
+        <!-- قائمة حلقات المسلسل -->
         <div class="episodes-section" id="episodesSection" style="display: none;">
           <div class="episodes-header">
             <h3>الحلقات</h3>
             <span class="season-label">الموسم 1</span>
           </div>
-          <div class="episodes-netflix-list" id="episodesListContainer">
-            <!-- كروت الحلقات -->
-          </div>
+          <div class="episodes-netflix-list" id="episodesListContainer"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- مشغل الفيديو الكامل -->
+  <!-- مشغل الفيديو السينمائي الكامل -->
   <div class="player-overlay" id="playerModal">
     <div class="player-container">
       <button class="player-back-btn" onclick="closePlayer()">➜ خروج من المشغل</button>
@@ -133,8 +129,12 @@
 
   <!-- تذييل الصفحة -->
   <footer class="netflix-footer">
-    <p class="footer-note">الأسئلة الشائعة • مركز المساعدة • شروط الاستخدام • الخصوصية</p>
-    <p class="footer-copy">© 2026 CRIMEFLIX. منصة مفتوحة ومجانية لمحبي الغموض والجريمة.</p>
+    <div class="brand-logo" style="justify-content: center; margin-bottom: 1rem;">
+      <span class="logo-red">CRIME</span>
+      <span class="logo-white">WORLD</span>
+    </div>
+    <p class="footer-note">منصة عربية متخصصة في أفلام ومسلسلات الجريمة والتحقيق والغموض.</p>
+    <p class="footer-copy">© 2026 CRIME WORLD. جميع الحقوق محفوظة.</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
