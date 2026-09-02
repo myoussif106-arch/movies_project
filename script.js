@@ -4,6 +4,8 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+let allMoviesData = [];
+let currentFilter = 'all';
 let currentTopMovieVideo = "";
 
 // التحكم في قائمة الموبايل
@@ -59,7 +61,7 @@ function formatVideoEmbedUrl(url) {
   return url;
 }
 
-// دوال المشغل السينمائي (Video Modal)
+// المشغل السينمائي
 function playVideo(videoUrl) {
   if (!videoUrl) {
     alert("لم يتم إضافة رابط فيديو لهذا العمل بعد!");
@@ -101,7 +103,7 @@ document.getElementById('heroPlayBtn').addEventListener('click', () => {
   playVideo(currentTopMovieVideo);
 });
 
-// تحديث قسم الـ Hero بالفيلم الأعلى إعجاباً
+// تحديث قسم الـ Hero بالعمل المتصدر
 function updateTopMovieHero(movies) {
   if (!movies || movies.length === 0) return;
 
@@ -113,46 +115,47 @@ function updateTopMovieHero(movies) {
   const heroDesc = document.getElementById('heroDesc');
   const heroMeta = document.getElementById('heroMeta');
   const heroLikes = document.getElementById('heroLikes');
-  const heroGenre = document.getElementById('heroGenre');
+  const heroTypeBadge = document.getElementById('heroTypeBadge');
 
   if (topMovie) {
     heroSection.style.backgroundImage = `url('${topMovie.image_url}')`;
     heroTitle.textContent = topMovie.title;
-    heroDesc.textContent = `العمل الحاصل على المركز الأول وتفضيل الجمهور بأعلى نسبة إعجاب في الموقع.`;
+    const typeLabel = topMovie.type === 'series' ? 'مسلسل' : 'فيلم';
+    heroDesc.textContent = `${typeLabel} التحقيق والجريمة الحاصل على أعلى تصويت وتفضيل في المنصة.`;
     heroLikes.textContent = `🔥 ${topMovie.likes || 0} إعجاب`;
-    heroGenre.textContent = `🔪 ${topMovie.genre || 'جريمة • غموض'}`;
+    heroTypeBadge.textContent = topMovie.type === 'series' ? '📺 مسلسل' : '🎬 فيلم';
     heroMeta.style.display = 'flex';
     currentTopMovieVideo = topMovie.video_url || "";
   }
 }
 
-// جلب الأفلام من Supabase (تم حذف فقرة التصنيف من هنا)
-async function loadMovies() {
+// رسم بطاقات الأعمال حسب الفلتر المختار
+function renderCards() {
   const container = document.getElementById('moviesContainer');
   if (!container) return;
 
-  const { data: movies, error } = await supabaseClient
-    .from('movies')
-    .select('*');
+  const filtered = currentFilter === 'all' 
+    ? allMoviesData 
+    : allMoviesData.filter(m => (m.type || 'movie') === currentFilter);
 
-  if (error || !movies || movies.length === 0) {
-    container.innerHTML = `<p class="empty-msg">لا توجد أفلام متاحة حالياً</p>`;
+  if (filtered.length === 0) {
+    container.innerHTML = `<p class="empty-msg">لا توجد أعمال متاحة في هذا القسم حالياً.</p>`;
     return;
   }
 
-  updateTopMovieHero(movies);
-
-  container.innerHTML = movies.map(movie => {
+  container.innerHTML = filtered.map(movie => {
     const savedVote = localStorage.getItem(`reaction_${movie.id}`);
     const likeActive = savedVote === 'like' ? 'voted' : '';
     const dislikeActive = savedVote === 'dislike' ? 'voted' : '';
     const movieVideo = movie.video_url || '';
+    const typeTag = (movie.type === 'series') ? '📺 مسلسل' : '🎬 فيلم';
 
     return `
       <div class="movie-card" data-id="${movie.id}">
         <div class="card-img-container" onclick="playVideo('${movieVideo}')">
           <img src="${movie.image_url}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/300x450/141419/ff1a1a?text=Crime+World'">
           <span class="card-badge">${movie.badge || 'HD'}</span>
+          <span class="card-type-tag">${typeTag}</span>
         </div>
         <div class="card-content">
           <h3>${movie.title}</h3>
@@ -171,6 +174,37 @@ async function loadMovies() {
       </div>
     `;
   }).join('');
+}
+
+// دالة الفلترة (الكل / أفلام / مسلسلات)
+function filterContent(type) {
+  currentFilter = type;
+
+  // تحديث حالة الأزرار النشطة
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === type);
+  });
+
+  renderCards();
+}
+
+// جلب الأعمال من Supabase
+async function loadMovies() {
+  const container = document.getElementById('moviesContainer');
+  if (!container) return;
+
+  const { data: movies, error } = await supabaseClient
+    .from('movies')
+    .select('*');
+
+  if (error || !movies || movies.length === 0) {
+    container.innerHTML = `<p class="empty-msg">لا توجد أعمال متاحة حالياً</p>`;
+    return;
+  }
+
+  allMoviesData = movies;
+  updateTopMovieHero(movies);
+  renderCards();
 }
 
 // معالجة تصويت Like / Dislike
@@ -214,6 +248,15 @@ async function handleVote(movieId, clickedType) {
     localStorage.setItem(storageKey, newVote);
   }
 
+  // تحديث البيانات محلياً للمحافظة على الترتيب والفلترة
+  const targetItem = allMoviesData.find(m => m.id === movieId);
+  if (targetItem) {
+    if (previousVote === 'like') targetItem.likes = Math.max(0, (targetItem.likes || 0) - 1);
+    if (previousVote === 'dislike') targetItem.dislikes = Math.max(0, (targetItem.dislikes || 0) - 1);
+    if (newVote === 'like') targetItem.likes = (targetItem.likes || 0) + 1;
+    if (newVote === 'dislike') targetItem.dislikes = (targetItem.dislikes || 0) + 1;
+  }
+
   const { error } = await supabaseClient.rpc('update_reaction', {
     target_id: movieId,
     new_type: newVote,
@@ -223,8 +266,7 @@ async function handleVote(movieId, clickedType) {
   if (error) {
     console.error("فشل التحديث:", error);
   } else {
-    const { data: updatedMovies } = await supabaseClient.from('movies').select('*');
-    if (updatedMovies) updateTopMovieHero(updatedMovies);
+    updateTopMovieHero(allMoviesData);
   }
 }
 
