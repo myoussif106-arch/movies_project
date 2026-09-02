@@ -30,11 +30,10 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// دالة تصحيح روابط الفيديو وتنظيف المشغل من الاقتراحات المزعجة
+// دالة تصحيح روابط الفيديو
 function formatVideoEmbedUrl(url) {
   if (!url) return "";
 
-  // 1. معالجة روابط Dailymotion وإلغاء شاشة الاقتراحات وقوائم الانتظار
   if (url.includes('dailymotion.com/video/')) {
     const videoId = url.split('/video/')[1].split('?')[0];
     return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1&ui-start-screen-info=0&endscreen-enable=false&queue-enable=false&sharing-enable=false&ui-logo=0`;
@@ -44,7 +43,6 @@ function formatVideoEmbedUrl(url) {
     return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1&ui-start-screen-info=0&endscreen-enable=false&queue-enable=false&sharing-enable=false&ui-logo=0`;
   }
 
-  // 2. معالجة روابط YouTube وإلغاء الفيديوهات المقترحة الخارجية
   if (url.includes('youtube.com/watch?v=')) {
     const videoId = url.split('v=')[1].split('&')[0];
     return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
@@ -54,7 +52,6 @@ function formatVideoEmbedUrl(url) {
     return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
   }
 
-  // 3. معالجة روابط Google Drive
   if (url.includes('drive.google.com/file/d/')) {
     return url.replace('/view', '/preview');
   }
@@ -97,7 +94,7 @@ function closeVideoModal() {
   const modal = document.getElementById('videoModal');
   const playerBox = document.getElementById('videoPlayerBox');
   modal.classList.remove('active');
-  playerBox.innerHTML = ''; // إيقاف تشغيل الفيديو عند الإغلاق
+  playerBox.innerHTML = '';
 }
 
 document.getElementById('heroPlayBtn').addEventListener('click', () => {
@@ -129,7 +126,7 @@ function updateTopMovieHero(movies) {
   }
 }
 
-// جلب الأفلام من Supabase
+// جلب الأفلام من Supabase (تم حذف فقرة التصنيف من هنا)
 async function loadMovies() {
   const container = document.getElementById('moviesContainer');
   if (!container) return;
@@ -159,7 +156,6 @@ async function loadMovies() {
         </div>
         <div class="card-content">
           <h3>${movie.title}</h3>
-          <p>${movie.genre || 'جريمة • غموض'}</p>
           <div class="card-footer">
             <div class="reaction-box">
               <button class="vote-btn like-btn ${likeActive}" onclick="handleVote('${movie.id}', 'like')">
@@ -196,7 +192,6 @@ async function handleVote(movieId, clickedType) {
     newVote = 'none';
   }
 
-  // تحديث فوري وسريع للواجهة
   if (previousVote === 'like') {
     likeSpan.textContent = Math.max(0, parseInt(likeSpan.textContent) - 1);
     likeBtn.classList.remove('voted');
@@ -233,7 +228,6 @@ async function handleVote(movieId, clickedType) {
   }
 }
 
-// إغلاق النافذة بزر Escape
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeVideoModal();
 });
